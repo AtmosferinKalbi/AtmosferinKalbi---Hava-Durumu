@@ -1,157 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AtmosferinKalbi - Hava Durumu</title>
-<link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hava Durumu | 4 Günlük Tahmin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.15);
+            --blur: blur(15px);
+        }
 
-<style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#1e1e1e;
-  color:white;
-  text-align:center;
-}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
-.header{
-  background:rgba(255,255,255,0.5);
-  padding:15px;
-  font-size:22px;
-  font-weight:bold;
-}
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px;
+        }
 
-.search{
-  margin:20px;
-}
+        .container {
+            background: var(--glass);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
 
-input{
-  padding:10px;
-  width:60%;
-  border:none;
-  border-radius:8px;
-}
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-button{
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  background:#00bfff;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-}
+        input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 15px;
+            color: white;
+            outline: none;
+        }
 
-.card{
-  margin:20px auto;
-  padding:20px;
-  width:90%;
-  max-width:400px;
-  border:2px solid #00bfff;
-  border-radius:15px;
-  box-shadow:0 0 15px #00bfff;
-}
+        button {
+            padding: 12px 20px;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            background: white;
+            color: #1e3c72;
+            font-weight: 600;
+        }
 
-.weather-main{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+        /* Ana Hava Durumu */
+        .current-weather {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-.weather-icon img{
-  width:100px;
-}
+        .current-weather h2 { font-size: 2rem; }
+        .current-weather .temp { font-size: 4rem; font-weight: 600; }
 
-.details{
-  text-align:left;
-}
+        /* 4 Günlük Tahmin Alanı */
+        .forecast-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 20px;
+        }
 
-.forecast{
-  margin-top:20px;
-}
+        .forecast-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
 
-.day{
-  border-top:1px solid #00bfff;
-  padding:10px;
-}
-</style>
+        .forecast-item img { width: 40px; }
+        .forecast-item .day { font-weight: 600; display: block; }
+    </style>
 </head>
-
 <body>
 
-<div class="header">
-AtmosferinKalbi - Hava Durumu
-</div>
-
-<div class="search">
-<input type="text" id="city" placeholder="Şehir gir">
-<button onclick="getWeather()">Ara</button>
-</div>
-
-<div id="result"></div>
-
-<script>
-const apiKey = "3027886ce4add5de26102859c5acfe45";
-
-async function getWeather(){
-  const city = document.getElementById("city").value;
-
-  const currentUrl =
-  `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=tr`;
-
-  const forecastUrl =
-  `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}&lang=tr`;
-
-  const currentRes = await fetch(currentUrl);
-  const currentData = await currentRes.json();
-
-  if(currentData.cod != 200){
-    document.getElementById("result").innerHTML = "Şehir bulunamadı";
-    return;
-  }
-
-  const forecastRes = await fetch(forecastUrl);
-  const forecastData = await forecastRes.json();
-
-  let html = `
-  <div class="card">
-    <div class="weather-main">
-      <div class="weather-icon">
-        <img src="https://openweathermap.org/img/wn/${currentData.weather[0].icon}@4x.png">
-      </div>
-      <div class="details">
-        <h2>${currentData.name}</h2>
-        <p>Sıcaklık: ${Math.round(currentData.main.temp)}°C</p>
-        <p>Hissedilen: ${Math.round(currentData.main.feels_like)}°C</p>
-        <p>Nem: ${currentData.main.humidity}%</p>
-        <p>Basınç: ${currentData.main.pressure} hPa</p>
-        <p>Rüzgar: ${Math.round(currentData.wind.speed)} m/s</p>
-        <p>Yağış İhtimali: ${forecastData.list[0].pop * 100}%</p>
-      </div>
+<div class="container">
+    <div class="search-box">
+        <input type="text" id="cityInput" placeholder="Şehir giriniz..." value="Istanbul">
+        <button id="searchBtn">Ara</button>
     </div>
 
-    <div class="forecast">
-      <h3>5 Günlük Tahmin</h3>
-  `;
+    <div class="current-weather">
+        <h2 id="cityName">Şehir</h2>
+        <img id="mainIcon" src="" alt="">
+        <div class="temp" id="mainTemp">--°C</div>
+        <p id="mainDesc">Hava Durumu</p>
+    </div>
 
-  forecastData.list
-  .filter(item => item.dt_txt.includes("12:00:00"))
-  .forEach(day => {
-    html += `
-    <div class="day">
-      <p>${new Date(day.dt * 1000).toLocaleDateString("tr-TR")}</p>
-      <p>${Math.round(day.main.temp)}°C</p>
-    </div>`;
-  });
+    <div class="forecast-container" id="forecastList">
+        </div>
+</div>
 
-  html += `</div></div>`;
+<script>
+    const apiKey = "3027886ce4add5de26102859c5acfe45"; // Kendi anahtarını buraya koy
 
-  document.getElementById("result").innerHTML = html;
-}
+    const searchBtn = document.getElementById('searchBtn');
+    const cityInput = document.getElementById('cityInput');
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
-}
+    async function getWeatherData(city) {
+        // Not: Ücretsiz hesaplar için genellikle 'forecast' (5 günlük/3 saatlik) kullanılır.
+        // Eğer Pro hesabın varsa senin verdiğin 'forecast/hourly' URL'sini buraya koyabilirsin.
+        const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=tr&appid=${apiKey}`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if(data.cod !== "200") {
+                alert("Şehir bulunamadı!");
+                return;
+            }
+
+            // 1. Güncel durumu göster (Listenin ilk elemanı)
+            const current = data.list[0];
+            document.getElementById('cityName').textContent = data.city.name;
+            document.getElementById('mainTemp').textContent = Math.round(current.main.temp) + "°C";
+            document.getElementById('mainDesc').textContent = current.weather[0].description.toUpperCase();
+            document.getElementById('mainIcon').src = `https://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png`;
+
+            // 2. Tahmin listesini temizle ve 4-5 günü doldur
+            const forecastList = document.getElementById('forecastList');
+            forecastList.innerHTML = "";
+
+            // API 3 saatte bir veri verir. Her gün için 1 veri çekmek için 8'er 8'er atlıyoruz (3*8=24 saat)
+            for (let i = 8; i < data.list.length; i += 8) {
+                const item = data.list[i];
+                const date = new Date(item.dt * 1000);
+                const dayName = date.toLocaleDateString('tr-TR', { weekday: 'short' });
+
+                const forecastHTML = `
+                    <div class="forecast-item">
+                        <span class="day">${dayName}</span>
+                        <img src="https://openweathermap.org/img/wn/${item.weather[0].icon}.png">
+                        <div>${Math.round(item.main.temp)}°C</div>
+                    </div>
+                `;
+                forecastList.insertAdjacentHTML('beforeend', forecastHTML);
+            }
+
+        } catch (error) {
+            console.error("Hata:", error);
+        }
+    }
+
+    searchBtn.addEventListener('click', () => getWeatherData(cityInput.value));
+    cityInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') getWeatherData(cityInput.value); });
+
+    // Sayfa açıldığında varsayılan arama yap
+    getWeatherData('Istanbul');
 </script>
 
 </body>
