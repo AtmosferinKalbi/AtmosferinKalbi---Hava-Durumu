@@ -1,74 +1,158 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Atmosferin Kalbi</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="manifest.json">
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #2196f3, #21cbf3);
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-    .card {
-      background: rgba(255,255,255,0.2);
-      padding: 20px;
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-      margin-top: 20px;
-    }
-    input {
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      width: 70%;
-    }
-    button {
-      padding: 10px 15px;
-      border-radius: 10px;
-      border: none;
-      background: white;
-      color: #2196f3;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AtmosferinKalbi - Hava Durumu</title>
+<link rel="manifest" href="manifest.json">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#1e1e1e;
+  color:white;
+  text-align:center;
+}
+
+.header{
+  background:rgba(255,255,255,0.5);
+  padding:15px;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.search{
+  margin:20px;
+}
+
+input{
+  padding:10px;
+  width:60%;
+  border:none;
+  border-radius:8px;
+}
+
+button{
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  background:#00bfff;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.card{
+  margin:20px auto;
+  padding:20px;
+  width:90%;
+  max-width:400px;
+  border:2px solid #00bfff;
+  border-radius:15px;
+  box-shadow:0 0 15px #00bfff;
+}
+
+.weather-main{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.weather-icon img{
+  width:100px;
+}
+
+.details{
+  text-align:left;
+}
+
+.forecast{
+  margin-top:20px;
+}
+
+.day{
+  border-top:1px solid #00bfff;
+  padding:10px;
+}
+</style>
 </head>
+
 <body>
 
-<h1>🌦 Atmosferin Kalbi</h1>
+<div class="header">
+AtmosferinKalbi - Hava Durumu
+</div>
 
-<input type="text" id="city" placeholder="Şehir gir...">
+<div class="search">
+<input type="text" id="city" placeholder="Şehir gir">
 <button onclick="getWeather()">Ara</button>
+</div>
 
-<div class="card" id="weatherResult"></div>
+<div id="result"></div>
 
 <script>
 const apiKey = "3027886ce4add5de26102859c5acfe45";
 
-async function getWeather() {
+async function getWeather(){
   const city = document.getElementById("city").value;
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=tr`;
 
-  const response = await fetch(url);
-  const data = await response.json();
+  const currentUrl =
+  `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=tr`;
 
-  if (data.cod === 200) {
-    document.getElementById("weatherResult").innerHTML =
-      `<h2>${data.name}</h2>
-       <p>Sıcaklık: ${data.main.temp}°C</p>
-       <p>Durum: ${data.weather[0].description}</p>`;
-  } else {
-    document.getElementById("weatherResult").innerHTML =
-      `<p>Şehir bulunamadı ❌</p>`;
+  const forecastUrl =
+  `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}&lang=tr`;
+
+  const currentRes = await fetch(currentUrl);
+  const currentData = await currentRes.json();
+
+  if(currentData.cod != 200){
+    document.getElementById("result").innerHTML = "Şehir bulunamadı";
+    return;
   }
+
+  const forecastRes = await fetch(forecastUrl);
+  const forecastData = await forecastRes.json();
+
+  let html = `
+  <div class="card">
+    <div class="weather-main">
+      <div class="weather-icon">
+        <img src="https://openweathermap.org/img/wn/${currentData.weather[0].icon}@4x.png">
+      </div>
+      <div class="details">
+        <h2>${currentData.name}</h2>
+        <p>Sıcaklık: ${Math.round(currentData.main.temp)}°C</p>
+        <p>Hissedilen: ${Math.round(currentData.main.feels_like)}°C</p>
+        <p>Nem: ${currentData.main.humidity}%</p>
+        <p>Basınç: ${currentData.main.pressure} hPa</p>
+        <p>Rüzgar: ${Math.round(currentData.wind.speed)} m/s</p>
+        <p>Yağış İhtimali: ${forecastData.list[0].pop * 100}%</p>
+      </div>
+    </div>
+
+    <div class="forecast">
+      <h3>5 Günlük Tahmin</h3>
+  `;
+
+  forecastData.list
+  .filter(item => item.dt_txt.includes("12:00:00"))
+  .forEach(day => {
+    html += `
+    <div class="day">
+      <p>${new Date(day.dt * 1000).toLocaleDateString("tr-TR")}</p>
+      <p>${Math.round(day.main.temp)}°C</p>
+    </div>`;
+  });
+
+  html += `</div></div>`;
+
+  document.getElementById("result").innerHTML = html;
 }
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
+</script>
 
-  
+</body>
+</html>
