@@ -1,10 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Hava Durumu</title>
+  <title>Atmosferin Kalbi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #2196f3, #21cbf3);
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(255,255,255,0.2);
+      padding: 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      margin-top: 20px;
+    }
+    input {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      width: 70%;
+    }
+    button {
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: none;
+      background: white;
+      color: #2196f3;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hava Durumu Uygulamam</h1>
-  <p>Yayındayım!</p>
+
+<h1>🌦 Atmosferin Kalbi</h1>
+
+<input type="text" id="city" placeholder="Şehir gir...">
+<button onclick="getWeather()">Ara</button>
+
+<div class="card" id="weatherResult"></div>
+
+<script>
+const apiKey = "3027886ce4add5de26102859c5acfe45";
+
+async function getWeather() {
+  const city = document.getElementById("city").value;
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=tr`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  if (data.cod === 200) {
+    document.getElementById("weatherResult").innerHTML =
+      `<h2>${data.name}</h2>
+       <p>Sıcaklık: ${data.main.temp}°C</p>
+       <p>Durum: ${data.weather[0].description}</p>`;
+  } else {
+    document.getElementById("weatherResult").innerHTML =
+      `<p>Şehir bulunamadı ❌</p>`;
+  }
+}
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
 </body>
 </html>
