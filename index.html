@@ -1,173 +1,121 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hava Durumu | 4 Günlük Tahmin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --glass: rgba(255, 255, 255, 0.15);
-            --blur: blur(15px);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 20px;
-        }
-
-        .container {
-            background: var(--glass);
-            backdrop-filter: var(--blur);
-            -webkit-backdrop-filter: var(--blur);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 2rem;
-            border-radius: 30px;
-            width: 100%;
-            max-width: 500px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-        }
-
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            padding: 12px 20px;
-            border-radius: 15px;
-            color: white;
-            outline: none;
-        }
-
-        button {
-            padding: 12px 20px;
-            border-radius: 15px;
-            border: none;
-            cursor: pointer;
-            background: white;
-            color: #1e3c72;
-            font-weight: 600;
-        }
-
-        /* Ana Hava Durumu */
-        .current-weather {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .current-weather h2 { font-size: 2rem; }
-        .current-weather .temp { font-size: 4rem; font-weight: 600; }
-
-        /* 4 Günlük Tahmin Alanı */
-        .forecast-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            padding-top: 20px;
-        }
-
-        .forecast-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 15px;
-            text-align: center;
-            font-size: 0.85rem;
-        }
-
-        .forecast-item img { width: 40px; }
-        .forecast-item .day { font-weight: 600; display: block; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AtmosferTürk - Hava Durumu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .weather-container {
+      background-color: #1e1e1e;
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,255,255,0.2);
+      display: flex;
+      align-items: center;
+      max-width: 500px;
+      width: 100%;
+      gap: 30px;
+      border: 2px solid rgba(0,255,255,0.5);
+    }
+    .weather-icon img {
+      width: 100px;
+      height: 100px;
+    }
+    .weather-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .weather-info h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #00ffff;
+    }
+    .weather-info p {
+      margin: 0;
+      font-size: 1rem;
+      color: #cccccc;
+    }
+    input[type="text"] {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      width: 200px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      background-color: #00ffff;
+      color: #121212;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #00cccc;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="search-box">
-        <input type="text" id="cityInput" placeholder="Şehir giriniz..." value="Istanbul">
-        <button id="searchBtn">Ara</button>
-    </div>
+<div>
+  <input type="text" id="cityInput" placeholder="Şehir Girin...">
+  <button onclick="getWeather()">Getir</button>
 
-    <div class="current-weather">
-        <h2 id="cityName">Şehir</h2>
-        <img id="mainIcon" src="" alt="">
-        <div class="temp" id="mainTemp">--°C</div>
-        <p id="mainDesc">Hava Durumu</p>
+  <div class="weather-container" id="weatherBox" style="display:none;">
+    <div class="weather-icon" id="icon"></div>
+    <div class="weather-info">
+      <h2 id="cityName"></h2>
+      <p id="temp"></p>
+      <p id="desc"></p>
+      <p id="humidity"></p>
+      <p id="wind"></p>
     </div>
-
-    <div class="forecast-container" id="forecastList">
-        </div>
+  </div>
 </div>
 
 <script>
-    const apiKey = "3027886ce4add5de26102859c5acfe45"; // Kendi anahtarını buraya koy
+  const apiKey = "3027886ce4add5de26102859c5acfe45"; // https://openweathermap.org/api
 
-    const searchBtn = document.getElementById('searchBtn');
-    const cityInput = document.getElementById('cityInput');
+  async function getWeather() {
+    const city = document.getElementById('cityInput').value;
+    if(!city) return alert("Şehir girin!");
+    
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&lang=tr&units=metric`;
 
-    async function getWeatherData(city) {
-        // Not: Ücretsiz hesaplar için genellikle 'forecast' (5 günlük/3 saatlik) kullanılır.
-        // Eğer Pro hesabın varsa senin verdiğin 'forecast/hourly' URL'sini buraya koyabilirsin.
-        const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=tr&appid=${apiKey}`;
+    try {
+      const res = await fetch(url);
+      if(!res.ok) throw new Error("Şehir bulunamadı.");
+      const data = await res.json();
 
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
+      document.getElementById('weatherBox').style.display = 'flex';
+      document.getElementById('cityName').textContent = data.name + ', ' + data.sys.country;
+      document.getElementById('temp').textContent = "Sıcaklık: " + data.main.temp.toFixed(1) + "°C";
+      document.getElementById('desc').textContent = "Durum: " + data.weather[0].description;
+      document.getElementById('humidity').textContent = "Nem: " + data.main.humidity + "%";
+      document.getElementById('wind').textContent = "Rüzgar: " + data.wind.speed + " m/s";
 
-            if(data.cod !== "200") {
-                alert("Şehir bulunamadı!");
-                return;
-            }
-
-            // 1. Güncel durumu göster (Listenin ilk elemanı)
-            const current = data.list[0];
-            document.getElementById('cityName').textContent = data.city.name;
-            document.getElementById('mainTemp').textContent = Math.round(current.main.temp) + "°C";
-            document.getElementById('mainDesc').textContent = current.weather[0].description.toUpperCase();
-            document.getElementById('mainIcon').src = `https://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png`;
-
-            // 2. Tahmin listesini temizle ve 4-5 günü doldur
-            const forecastList = document.getElementById('forecastList');
-            forecastList.innerHTML = "";
-
-            // API 3 saatte bir veri verir. Her gün için 1 veri çekmek için 8'er 8'er atlıyoruz (3*8=24 saat)
-            for (let i = 8; i < data.list.length; i += 8) {
-                const item = data.list[i];
-                const date = new Date(item.dt * 1000);
-                const dayName = date.toLocaleDateString('tr-TR', { weekday: 'short' });
-
-                const forecastHTML = `
-                    <div class="forecast-item">
-                        <span class="day">${dayName}</span>
-                        <img src="https://openweathermap.org/img/wn/${item.weather[0].icon}.png">
-                        <div>${Math.round(item.main.temp)}°C</div>
-                    </div>
-                `;
-                forecastList.insertAdjacentHTML('beforeend', forecastHTML);
-            }
-
-        } catch (error) {
-            console.error("Hata:", error);
-        }
+      const iconCode = data.weather[0].icon;
+      document.getElementById('icon').innerHTML = `<img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="icon">`;
+    } catch (error) {
+      alert(error.message);
     }
-
-    searchBtn.addEventListener('click', () => getWeatherData(cityInput.value));
-    cityInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') getWeatherData(cityInput.value); });
-
-    // Sayfa açıldığında varsayılan arama yap
-    getWeatherData('Istanbul');
+  }
 </script>
 
 </body>
+</html>
