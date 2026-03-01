@@ -1,121 +1,144 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AtmosferTürk - Hava Durumu</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Roboto', sans-serif;
-      background-color: #121212;
-      color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .weather-container {
-      background-color: #1e1e1e;
-      padding: 30px 40px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0,255,255,0.2);
-      display: flex;
-      align-items: center;
-      max-width: 500px;
-      width: 100%;
-      gap: 30px;
-      border: 2px solid rgba(0,255,255,0.5);
-    }
-    .weather-icon img {
-      width: 100px;
-      height: 100px;
-    }
-    .weather-info {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .weather-info h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      color: #00ffff;
-    }
-    .weather-info p {
-      margin: 0;
-      font-size: 1rem;
-      color: #cccccc;
-    }
-    input[type="text"] {
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      width: 200px;
-      margin-bottom: 20px;
-    }
-    button {
-      padding: 10px 20px;
-      border-radius: 10px;
-      border: none;
-      background-color: #00ffff;
-      color: #121212;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #00cccc;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atmosfer Pro | Canlı Veri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            transition: background 1s ease;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+        }
+    </style>
 </head>
-<body>
+<body class="text-white flex items-center justify-center p-4">
 
-<div>
-  <input type="text" id="cityInput" placeholder="Şehir Girin...">
-  <button onclick="getWeather()">Getir</button>
+    <div class="max-w-4xl w-full space-y-6">
+        
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-2xl font-bold tracking-tight italic">ATMOSFER<span class="text-blue-300">TURK</span></h1>
+            <div class="relative w-full md:w-64">
+                <input id="cityInput" type="text" placeholder="Şehir Ara (örn: Ankara)" 
+                    class="w-full bg-white/20 border-none rounded-full px-5 py-2 focus:ring-2 focus:ring-blue-400 outline-none placeholder-blue-100 text-white">
+                <button onclick="getWeather()" class="absolute right-4 top-2.5">
+                    <i data-lucide="search" class="w-5 h-5 opacity-60 hover:opacity-100 transition"></i>
+                </button>
+            </div>
+        </div>
 
-  <div class="weather-container" id="weatherBox" style="display:none;">
-    <div class="weather-icon" id="icon"></div>
-    <div class="weather-info">
-      <h2 id="cityName"></h2>
-      <p id="temp"></p>
-      <p id="desc"></p>
-      <p id="humidity"></p>
-      <p id="wind"></p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div id="mainCard" class="md:col-span-2 glass-card p-8 flex flex-col justify-between min-h-[300px]">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h2 id="cityName" class="text-4xl font-semibold">Şehir Yükleniyor...</h2>
+                        <p id="currentDate" class="text-blue-100 opacity-80"></p>
+                    </div>
+                    <div class="text-right flex flex-col items-center">
+                        <div id="weatherIcon"></div>
+                        <p id="description" class="text-xl font-medium capitalize"></p>
+                    </div>
+                </div>
+                
+                <div class="mt-12 flex items-baseline gap-2">
+                    <span id="temp" class="text-8xl font-bold">--°</span>
+                    <span id="feelsLike" class="text-2xl opacity-60">/ --°C</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 grid grid-cols-2 gap-4">
+                <div class="flex flex-col items-center justify-center p-4 bg-white/5 rounded-2xl">
+                    <i data-lucide="droplets" class="text-blue-300 mb-2"></i>
+                    <span class="text-sm opacity-60">Nem</span>
+                    <span id="humidity" class="font-bold">--%</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-4 bg-white/5 rounded-2xl">
+                    <i data-lucide="wind" class="text-blue-300 mb-2"></i>
+                    <span class="text-sm opacity-60">Rüzgar</span>
+                    <span id="windSpeed" class="font-bold">-- km/s</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-4 bg-white/5 rounded-2xl">
+                    <i data-lucide="gauge" class="text-blue-300 mb-2"></i>
+                    <span class="text-sm opacity-60">Basınç</span>
+                    <span id="pressure" class="font-bold">-- hPa</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-4 bg-white/5 rounded-2xl">
+                    <i data-lucide="cloud" class="text-blue-300 mb-2"></i>
+                    <span class="text-sm opacity-60">Bulut</span>
+                    <span id="cloudiness" class="font-bold">--%</span>
+                </div>
+            </div>
+        </div>
+
     </div>
-  </div>
-</div>
 
-<script>
-  const apiKey = "3027886ce4add5de26102859c5acfe45"; // https://openweathermap.org/api
+    <script>
+        const apiKey = "3027886ce4add5de26102859c5acfe45";
+        const dateEl = document.getElementById('currentDate');
+        
+        // Tarihi ayarla
+        const now = new Date();
+        dateEl.innerText = now.toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' });
 
-  async function getWeather() {
-    const city = document.getElementById('cityInput').value;
-    if(!city) return alert("Şehir girin!");
-    
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&lang=tr&units=metric`;
+        async function getWeather(city = 'Istanbul') {
+            const input = document.getElementById('cityInput').value;
+            const targetCity = input || city;
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${targetCity}&appid=${apiKey}&units=metric&lang=tr`;
 
-    try {
-      const res = await fetch(url);
-      if(!res.ok) throw new Error("Şehir bulunamadı.");
-      const data = await res.json();
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
 
-      document.getElementById('weatherBox').style.display = 'flex';
-      document.getElementById('cityName').textContent = data.name + ', ' + data.sys.country;
-      document.getElementById('temp').textContent = "Sıcaklık: " + data.main.temp.toFixed(1) + "°C";
-      document.getElementById('desc').textContent = "Durum: " + data.weather[0].description;
-      document.getElementById('humidity').textContent = "Nem: " + data.main.humidity + "%";
-      document.getElementById('wind').textContent = "Rüzgar: " + data.wind.speed + " m/s";
+                if (data.cod === "404") {
+                    alert("Şehir bulunamadı!");
+                    return;
+                }
 
-      const iconCode = data.weather[0].icon;
-      document.getElementById('icon').innerHTML = `<img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="icon">`;
-    } catch (error) {
-      alert(error.message);
-    }
-  }
-</script>
+                // UI Güncelleme
+                document.getElementById('cityName').innerText = data.name;
+                document.getElementById('temp').innerText = Math.round(data.main.temp) + "°";
+                document.getElementById('feelsLike').innerText = "/ " + Math.round(data.main.feels_like) + "°C";
+                document.getElementById('description').innerText = data.weather[0].description;
+                document.getElementById('humidity').innerText = "%" + data.main.humidity;
+                document.getElementById('windSpeed').innerText = data.wind.speed + " km/s";
+                document.getElementById('pressure').innerText = data.main.pressure + " hPa";
+                document.getElementById('cloudiness').innerText = "%" + data.clouds.all;
 
+                // Dinamik İkon (OpenWeather icon kodunu Lucide ile eşleştirme simülasyonu)
+                const iconContainer = document.getElementById('weatherIcon');
+                const mainWeather = data.weather[0].main.toLowerCase();
+                let iconName = 'sun';
+                
+                if(mainWeather.includes('cloud')) iconName = 'cloud';
+                if(mainWeather.includes('rain')) iconName = 'cloud-rain';
+                if(mainWeather.includes('clear')) iconName = 'sun';
+                if(mainWeather.includes('snow')) iconName = 'snowflake';
+
+                iconContainer.innerHTML = `<i data-lucide="${iconName}" class="w-16 h-16 mb-2"></i>`;
+                lucide.createIcons();
+
+            } catch (error) {
+                console.error("Veri çekilemedi:", error);
+            }
+        }
+
+        // Enter tuşu ile arama yapma
+        document.getElementById('cityInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') getWeather();
+        });
+
+        // Sayfa açıldığında İstanbul'u getir
+        getWeather();
+    </script>
 </body>
 </html>
