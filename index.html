@@ -13,7 +13,8 @@
         
         body { 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e3a8a 100%);
+            /* Güzel Mavi Gradyan Arka Plan */
+            background: linear-gradient(135deg, #020617 0%, #0f172a 40%, #1e3a8a 100%);
             background-attachment: fixed;
             min-height: 100vh; color: white; margin: 0;
         }
@@ -115,15 +116,15 @@
             <div class="grid grid-cols-1 gap-6">
                 <div class="glass-card p-10 flex items-center gap-8 group transition-all hover:bg-white/[0.05]">
                     <div class="bg-blue-500/10 p-5 rounded-3xl text-blue-400"><i data-lucide="wind" class="w-10 h-10"></i></div>
-                    <div><p class="text-[10px] opacity-30 font-black uppercase tracking-widest mb-1">RÜZGAR</p><p class="text-5xl data-font text-outline"><span id="windSpeed">--</span><span class="unit-label text-sm uppercase">km/s</span></p></div>
+                    <div><p class="text-lg opacity-80 font-bold uppercase tracking-widest mb-1">RÜZGAR HIZI</p><p class="text-5xl data-font text-outline"><span id="windSpeed">--</span><span class="unit-label text-sm uppercase">km/s</span></p></div>
                 </div>
                 <div class="glass-card p-10 flex items-center gap-8 group transition-all hover:bg-white/[0.05]">
                     <div class="bg-blue-500/10 p-5 rounded-3xl text-blue-400"><i data-lucide="droplets" class="w-10 h-10"></i></div>
-                    <div><p class="text-[10px] opacity-30 font-black uppercase tracking-widest mb-1">NEM ORANI</p><p class="text-6xl data-font text-outline italic"><span id="humidity">--</span><span class="unit-label text-2xl">%</span></p></div>
+                    <div><p class="text-lg opacity-80 font-bold uppercase tracking-widest mb-1">NEM ORANI</p><p class="text-6xl data-font text-outline italic"><span id="humidity">--</span><span class="unit-label text-2xl">%</span></p></div>
                 </div>
                 <div class="glass-card p-10 flex items-center gap-8 group transition-all hover:bg-white/[0.05]">
                     <div class="bg-blue-500/10 p-5 rounded-3xl text-blue-400"><i data-lucide="umbrella" class="w-10 h-10"></i></div>
-                    <div><p class="text-[10px] opacity-30 font-black uppercase tracking-widest mb-1">YAĞIŞ İHTİMALİ</p><p class="text-6xl data-font text-outline italic"><span id="pop">--</span><span class="unit-label text-2xl">%</span></p></div>
+                    <div><p class="text-lg opacity-80 font-bold uppercase tracking-widest mb-1">YAĞIŞ İHTİMALİ</p><p class="text-6xl data-font text-outline italic"><span id="pop">--</span><span class="unit-label text-2xl">%</span></p></div>
                 </div>
             </div>
         </div>
@@ -140,71 +141,72 @@
             </div>
         </section>
     </main>
+</div>
 
-    <script>
-        const apiKey = "6d4c1f9be7237068a9dd323532bfa14d"; 
-        function getLucideIcon(main) {
-            const map = { 'Clear': 'sun', 'Clouds': 'cloud', 'Rain': 'cloud-rain', 'Thunderstorm': 'cloud-lightning', 'Snow': 'snowflake' };
-            return map[main] || 'cloud-sun';
-        }
+<script>
+    const apiKey = "6d4c1f9be7237068a9dd323532bfa14d"; 
+    function getLucideIcon(main) {
+        const map = { 'Clear': 'sun', 'Clouds': 'cloud', 'Rain': 'cloud-rain', 'Thunderstorm': 'cloud-lightning', 'Snow': 'snowflake' };
+        return map[main] || 'cloud-sun';
+    }
 
-        async function getWeather(city = 'Istanbul') {
-            const target = document.getElementById('cityInput').value.trim() || city;
-            try {
-                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
-                const data = await res.json();
-                if(data.cod != 200) return alert("Şehir bulunamadı!");
+    async function getWeather(city = 'Istanbul') {
+        const target = document.getElementById('cityInput').value.trim() || city;
+        try {
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
+            const data = await res.json();
+            if(data.cod != 200) return alert("Şehir bulunamadı!");
 
-                document.getElementById('cityName').innerText = data.name;
-                document.getElementById('temp').innerText = Math.round(data.main.temp) + "°";
-                document.getElementById('description').innerText = data.weather[0].description;
-                document.getElementById('windSpeed').innerText = Math.round(data.wind.speed * 3.6);
-                document.getElementById('humidity').innerText = data.main.humidity;
-                document.getElementById('pressure').innerText = data.main.pressure;
+            document.getElementById('cityName').innerText = data.name;
+            document.getElementById('temp').innerText = Math.round(data.main.temp) + "°";
+            document.getElementById('description').innerText = data.weather[0].description;
+            document.getElementById('windSpeed').innerText = Math.round(data.wind.speed * 3.6);
+            document.getElementById('humidity').innerText = data.main.humidity;
+            document.getElementById('pressure').innerText = data.main.pressure;
 
-                const iconName = getLucideIcon(data.weather[0].main);
-                document.getElementById('weatherIcon').innerHTML = `<i data-lucide="${iconName}" class="w-24 h-24 text-blue-100"></i>`;
-                document.getElementById('bgIcon').innerHTML = `<i data-lucide="${iconName}" class="w-96 h-96 text-white"></i>`;
+            const iconName = getLucideIcon(data.weather[0].main);
+            document.getElementById('weatherIcon').innerHTML = `<i data-lucide="${iconName}" class="w-24 h-24 text-blue-100"></i>`;
+            document.getElementById('bgIcon').innerHTML = `<i data-lucide="${iconName}" class="w-96 h-96 text-white"></i>`;
 
-                document.getElementById('windyIframe').src = `https://embed.windy.com/embed2.html?lat=${data.coord.lat}&lon=${data.coord.lon}&zoom=6&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1`;
+            document.getElementById('windyIframe').src = `https://embed.windy.com/embed2.html?lat=${data.coord.lat}&lon=${data.coord.lon}&zoom=6&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1`;
 
-                const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
-                const fData = await fRes.json();
-                document.getElementById('pop').innerText = Math.round((fData.list[0].pop || 0) * 100);
+            const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
+            const fData = await fRes.json();
+            document.getElementById('pop').innerText = Math.round((fData.list[0].pop || 0) * 100);
 
-                const daily = {};
-                fData.list.forEach(i => {
-                    const d = i.dt_txt.split(' ')[0];
-                    if(!daily[d]) daily[d] = { max: [], min: [], icon: i.weather[0].main };
-                    daily[d].max.push(i.main.temp_max);
-                    daily[d].min.push(i.main.temp_min);
-                });
+            const daily = {};
+            fData.list.forEach(i => {
+                const d = i.dt_txt.split(' ')[0];
+                if(!daily[d]) daily[d] = { max: [], min: [], icon: i.weather[0].main };
+                daily[d].max.push(i.main.temp_max);
+                daily[d].min.push(i.main.temp_min);
+            });
 
-                document.getElementById('nightTemp').innerText = Math.round(Math.min(...daily[Object.keys(daily)[0]].min)) + "°";
-                const container = document.getElementById('forecastContainer');
-                container.innerHTML = "";
-                Object.keys(daily).slice(1, 6).forEach(d => {
-                    const name = new Date(d).toLocaleDateString('tr-TR', { weekday: 'long' });
-                    container.innerHTML += `
-                        <div class="forecast-card flex flex-col items-center group">
-                            <span class="text-[10px] font-black opacity-30 uppercase mb-5 tracking-widest">${name}</span>
-                            <i data-lucide="${getLucideIcon(daily[d].icon)}" class="text-blue-400 w-12 h-12 mb-8 group-hover:scale-110 transition-transform"></i>
-                            <div class="text-center">
-                                <span class="text-4xl data-font text-outline">${Math.round(Math.max(...daily[d].max))}°</span>
-                                <div class="text-[10px] font-black opacity-20 mt-3 uppercase italic">${Math.round(Math.min(...daily[d].min))}° GECE</div>
-                            </div>
-                        </div>`;
-                });
-                lucide.createIcons();
-            } catch (e) { console.error(e); }
-        }
+            document.getElementById('nightTemp').innerText = Math.round(Math.min(...daily[Object.keys(daily)[0]].min)) + "°";
+            const container = document.getElementById('forecastContainer');
+            container.innerHTML = "";
+            Object.keys(daily).slice(1, 6).forEach(d => {
+                const name = new Date(d).toLocaleDateString('tr-TR', { weekday: 'long' });
+                container.innerHTML += `
+                    <div class="forecast-card flex flex-col items-center group">
+                        <span class="text-[10px] font-black opacity-30 uppercase mb-5 tracking-widest">${name}</span>
+                        <i data-lucide="${getLucideIcon(daily[d].icon)}" class="text-blue-400 w-12 h-12 mb-8 group-hover:scale-110 transition-transform"></i>
+                        <div class="text-center">
+                            <span class="text-4xl data-font text-outline">${Math.round(Math.max(...daily[d].max))}°</span>
+                            <div class="text-[10px] font-black opacity-20 mt-3 uppercase italic">${Math.round(Math.min(...daily[d].min))}° GECE</div>
+                        </div>
+                    </div>`;
+            });
+            lucide.createIcons();
+        } catch (e) { console.error(e); }
+    }
 
-        document.getElementById('cityInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') getWeather(); });
-        window.onload = () => { 
-            getWeather(); 
-            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' });
-        };
-    </script>
+    document.getElementById('cityInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') getWeather(); });
+    window.onload = () => { 
+        getWeather(); 
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' });
+    };
+</script>
 </body>
-            </html>
-                
+    </html>
+                    
