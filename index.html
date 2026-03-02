@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AtmosferinKalbi | V1.0</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Atmosfer">
+    
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/4064/4064211.png">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/4064/4064211.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -19,6 +26,7 @@
             scroll-behavior: smooth;
         }
 
+        /* Üst Navigasyon */
         .top-nav {
             background: rgba(15, 23, 42, 0.9);
             backdrop-filter: blur(20px);
@@ -86,7 +94,7 @@
             </div>
             <div class="relative w-full md:w-[450px]">
                 <input id="cityInput" type="text" placeholder="ŞEHİR ARA..." class="w-full bg-black/20 border border-white/10 rounded-2xl px-7 py-5 outline-none text-white focus:border-blue-500 transition-all font-bold text-lg">
-                <button onclick="getWeather()" class="absolute right-3 top-3 bg-blue-600 text-white px-8 py-3 rounded-xl text-xs font-black hover:bg-blue-500 transition-all shadow-xl">SORGULA</button>
+                <button onclick="getWeather()" class="absolute right-3 top-3 bg-blue-600 text-white px-8 py-3 rounded-xl text-xs font-black hover:bg-blue-500 transition-all">SORGULA</button>
             </div>
         </header>
 
@@ -119,22 +127,30 @@
                 </div>
                 <div class="glass-card p-10 flex items-center gap-8 group">
                     <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all"><i data-lucide="droplets" class="w-10 h-10"></i></div>
-                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Nem</p><p id="humidity" class="text-5xl data-font">--</p></div>
+                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Nem Oranı</p><p id="humidity" class="text-5xl data-font">--</p></div>
                 </div>
                 <div class="glass-card p-10 flex items-center gap-8 group">
                     <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all"><i data-lucide="umbrella" class="w-10 h-10"></i></div>
-                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Yağış</p><p id="pop" class="text-5xl data-font">--</p></div>
+                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Yağış İht.</p><p id="pop" class="text-5xl data-font">--</p></div>
                 </div>
             </div>
         </div>
 
         <section id="radar-section" class="space-y-8">
-            <div class="flex items-center gap-6"><h3 class="text-lg font-black uppercase tracking-[0.4em] text-white/30 whitespace-nowrap">Canlı Radar</h3><div class="h-[1px] w-full bg-white/10"></div></div>
-            <div id="radar-container"><iframe id="windyFrame" class="w-full h-full" src="" frameborder="0"></iframe></div>
+            <div class="flex items-center gap-6">
+                <h3 class="text-lg font-black uppercase tracking-[0.4em] text-white/30 whitespace-nowrap">Canlı Radar</h3>
+                <div class="h-[1px] w-full bg-white/10"></div>
+            </div>
+            <div id="radar-container">
+                <iframe id="windyFrame" class="w-full h-full" src="" frameborder="0"></iframe>
+            </div>
         </section>
 
         <section class="space-y-10">
-            <div class="flex items-center gap-6"><h3 class="text-lg font-black uppercase tracking-[0.4em] text-white/30 whitespace-nowrap">5 Günlük Rapor</h3><div class="h-[1px] w-full bg-white/10"></div></div>
+            <div class="flex items-center gap-6">
+                <h3 class="text-lg font-black uppercase tracking-[0.4em] text-white/30 whitespace-nowrap">5 Günlük Rapor</h3>
+                <div class="h-[1px] w-full bg-white/10"></div>
+            </div>
             <div id="forecastContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8"></div>
         </section>
 
@@ -168,10 +184,10 @@
             document.getElementById('weatherIcon').innerHTML = `<i data-lucide="${iconName}" class="w-32 h-32 lg:w-40 lg:h-40 text-white"></i>`;
             document.getElementById('bgIcon').innerHTML = `<i data-lucide="${iconName}" class="w-full h-full text-white"></i>`;
 
-            // Radar
+            // Radar Güncelleme
             document.getElementById('windyFrame').src = `https://embed.windy.com/embed2.html?lat=${data.coord.lat}&lon=${data.coord.lon}&zoom=6&level=surface&overlay=rain&product=ecmwf&metricWind=km%2Fh&metricTemp=%C2%B0C`;
 
-            // Tahmin
+            // 5 Günlük Tahmin Verisi
             const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
             const fData = await fRes.json();
             document.getElementById('pop').innerText = "%" + Math.round((fData.list[0].pop || 0) * 100);
