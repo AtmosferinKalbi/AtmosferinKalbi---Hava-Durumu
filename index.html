@@ -51,14 +51,11 @@
         .temp-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.2); }
 
         #radar-container {
-            height: 500px;
+            height: 600px;
             border-radius: 2.5rem;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        /* Daire Grafik Animasyonu */
-        #damCircle { transition: stroke-dashoffset 1.5s ease-in-out; }
     </style>
 </head>
 <body>
@@ -71,13 +68,12 @@
             </div>
             <div class="hidden md:flex items-center gap-2">
                 <a href="#" class="nav-btn active"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Panel</a>
-                <a href="#radar-section" class="nav-btn"><i data-lucide="map" class="w-4 h-4"></i> Radar</a>
-                <a href="#dam-section" class="nav-btn"><i data-lucide="waves" class="w-4 h-4"></i> Su Durumu</a>
+                <a href="#radar-section" class="nav-btn"><i data-lucide="map" class="w-4 h-4"></i> Canlı Radar</a>
             </div>
         </div>
         <div class="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/5">
             <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span id="status" class="text-[10px] font-bold text-green-400 uppercase tracking-widest">AKTİF</span>
+            <span id="status" class="text-[10px] font-bold text-green-400 uppercase tracking-widest">SİSTEM AKTİF</span>
         </div>
     </nav>
 
@@ -85,59 +81,51 @@
         
         <header class="flex flex-col md:flex-row justify-between items-center gap-8 border-b border-white/10 pb-12">
             <div>
-                <h1 id="cityName" class="text-6xl lg:text-7xl font-black uppercase tracking-tighter mb-2">---</h1>
+                <h1 id="cityName" class="text-6xl lg:text-8xl font-black uppercase tracking-tighter leading-none mb-4">---</h1>
                 <p id="currentDate" class="text-blue-300/40 font-bold text-[11px] uppercase tracking-[0.6em]"></p>
             </div>
             <div class="relative w-full md:w-[450px]">
                 <input id="cityInput" type="text" placeholder="ŞEHİR ARA..." class="w-full bg-black/20 border border-white/10 rounded-2xl px-7 py-5 outline-none text-white focus:border-blue-500 transition-all font-bold text-lg">
-                <button onclick="getWeather()" class="absolute right-3 top-3 bg-blue-600 text-white px-8 py-3 rounded-xl text-xs font-black hover:bg-blue-500 transition-all">SORGULA</button>
+                <button onclick="getWeather()" class="absolute right-3 top-3 bg-blue-600 text-white px-8 py-3 rounded-xl text-xs font-black hover:bg-blue-500 transition-all shadow-xl">SORGULA</button>
             </div>
         </header>
 
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-10">
-            <div class="xl:col-span-2 glass-card p-10 lg:p-12 flex flex-col justify-between min-h-[500px] relative overflow-hidden">
-                <div id="bgIcon" class="absolute -right-10 -bottom-10 opacity-[0.03] scale-[4] pointer-events-none"></div>
+            <div class="xl:col-span-2 glass-card p-10 lg:p-14 flex flex-col justify-between min-h-[550px] relative overflow-hidden group">
+                <div id="bgIcon" class="absolute -right-10 -bottom-10 opacity-[0.03] scale-[4] pointer-events-none transition-transform duration-1000"></div>
                 <div class="relative z-10">
-                    <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
-                        <span id="temp" class="text-[8rem] lg:text-[9rem] data-font text-white">--°</span>
-                        <div id="weatherIcon"></div>
+                    <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-20">
+                        <span id="temp" class="text-[9rem] lg:text-[11rem] data-font text-white drop-shadow-2xl">--°</span>
+                        <div id="weatherIcon" class="drop-shadow-2xl"></div>
                     </div>
-                    <p id="description" class="text-3xl lg:text-5xl text-blue-200/80 font-light capitalize mt-6 italic">---</p>
+                    <p id="description" class="text-4xl lg:text-6xl text-blue-200/80 font-light capitalize mt-10 italic">---</p>
                 </div>
-                <div class="relative z-10 flex gap-10 border-t border-white/10 pt-10 mt-10">
-                    <div class="bg-white/5 px-6 py-3 rounded-2xl border border-white/5 text-center">
-                        <p class="text-[9px] font-black opacity-30 tracking-widest uppercase mb-1">Gündüz</p>
-                        <p id="dayTemp" class="text-4xl data-font">--°</p>
+                <div class="relative z-10 flex gap-12 border-t border-white/10 pt-10 mt-10">
+                    <div class="bg-white/5 px-8 py-4 rounded-3xl border border-white/5 flex flex-col items-center">
+                        <p class="text-[10px] font-black opacity-30 tracking-widest uppercase mb-2">Gündüz Max</p>
+                        <p id="dayTemp" class="text-5xl data-font">--°</p>
                     </div>
-                    <div class="bg-blue-500/5 px-6 py-3 rounded-2xl border border-blue-500/10 text-center text-blue-400">
-                        <p class="text-[9px] font-black opacity-60 tracking-widest uppercase mb-1">Gece</p>
-                        <p id="nightTemp" class="text-4xl data-font">--°</p>
+                    <div class="bg-blue-500/5 px-8 py-4 rounded-3xl border border-blue-500/10 flex flex-col items-center text-blue-400">
+                        <p class="text-[10px] font-black opacity-60 tracking-widest uppercase mb-2">Gece Min</p>
+                        <p id="nightTemp" class="text-5xl data-font">--°</p>
                     </div>
                 </div>
             </div>
 
-            <section id="dam-section" class="glass-card p-10 flex flex-col justify-between">
-                <div class="flex items-center justify-between mb-8">
-                    <h3 class="text-sm font-black uppercase tracking-widest opacity-40">Baraj Doluluk</h3>
-                    <i data-lucide="waves" class="text-blue-400 w-5 h-5"></i>
+            <div class="grid grid-cols-1 gap-6">
+                <div class="glass-card p-10 flex items-center gap-8 group">
+                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all"><i data-lucide="wind" class="w-10 h-10"></i></div>
+                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Rüzgar</p><p id="windSpeed" class="text-5xl data-font">--</p></div>
                 </div>
-                <div class="flex flex-col items-center justify-center flex-1 space-y-8">
-                    <div class="relative flex items-center justify-center">
-                        <svg class="w-48 h-48 transform -rotate-90">
-                            <circle cx="96" cy="96" r="85" stroke="currentColor" stroke-width="12" fill="transparent" class="text-white/5" />
-                            <circle id="damCircle" cx="96" cy="96" r="85" stroke="currentColor" stroke-width="12" fill="transparent" 
-                                stroke-dasharray="534" stroke-dashoffset="534" class="text-blue-500" stroke-linecap="round" />
-                        </svg>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span id="damPercent" class="text-5xl data-font">%0</span>
-                            <span class="text-[10px] opacity-40 font-bold uppercase mt-2">Kapasite</span>
-                        </div>
-                    </div>
-                    <div class="w-full bg-white/5 p-4 rounded-2xl border border-white/5">
-                        <p id="damNote" class="text-xs text-center italic opacity-60 italic">Şehir verisi işleniyor...</p>
-                    </div>
+                <div class="glass-card p-10 flex items-center gap-8 group">
+                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all"><i data-lucide="droplets" class="w-10 h-10"></i></div>
+                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Nem</p><p id="humidity" class="text-5xl data-font">--</p></div>
                 </div>
-            </section>
+                <div class="glass-card p-10 flex items-center gap-8 group">
+                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all"><i data-lucide="umbrella" class="w-10 h-10"></i></div>
+                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Yağış</p><p id="pop" class="text-5xl data-font">--</p></div>
+                </div>
+            </div>
         </div>
 
         <section id="radar-section" class="space-y-8">
@@ -156,38 +144,38 @@
     const apiKey = "6d4c1f9be7237068a9dd323532bfa14d"; 
 
     function getIcon(main) {
-        const map = { 'Clear': 'sun', 'Clouds': 'cloud', 'Rain': 'cloud-rain', 'Thunderstorm': 'cloud-lightning', 'Snow': 'snowflake' };
+        const map = { 'Clear': 'sun', 'Clouds': 'cloud', 'Rain': 'cloud-rain', 'Thunderstorm': 'cloud-lightning', 'Snow': 'snowflake', 'Drizzle': 'cloud-drizzle', 'Mist': 'cloud-fog' };
         return map[main] || 'cloud-sun';
     }
 
     async function getWeather(city = 'Istanbul') {
         const target = document.getElementById('cityInput').value.trim() || city;
+        const status = document.getElementById('status');
+        
         try {
+            status.innerText = "GÜNCELLENİYOR...";
             const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
             const data = await res.json();
-            if(data.cod != 200) return;
+            if(data.cod != 200) throw new Error("Hata");
 
             document.getElementById('cityName').innerText = data.name;
             document.getElementById('temp').innerText = Math.round(data.main.temp) + "°";
             document.getElementById('description').innerText = data.weather[0].description;
+            document.getElementById('windSpeed').innerText = Math.round(data.wind.speed * 3.6) + " km/s";
+            document.getElementById('humidity').innerText = "%" + data.main.humidity;
             
             const iconName = getIcon(data.weather[0].main);
-            document.getElementById('weatherIcon').innerHTML = `<i data-lucide="${iconName}" class="w-24 h-24 lg:w-32 lg:h-32 text-white"></i>`;
+            document.getElementById('weatherIcon').innerHTML = `<i data-lucide="${iconName}" class="w-32 h-32 lg:w-40 lg:h-40 text-white"></i>`;
             document.getElementById('bgIcon').innerHTML = `<i data-lucide="${iconName}" class="w-full h-full text-white"></i>`;
 
             // Radar
-            document.getElementById('windyFrame').src = `https://embed.windy.com/embed2.html?lat=${data.coord.lat}&lon=${data.coord.lon}&zoom=6&overlay=rain&product=ecmwf&metricTemp=%C2%B0C`;
+            document.getElementById('windyFrame').src = `https://embed.windy.com/embed2.html?lat=${data.coord.lat}&lon=${data.coord.lon}&zoom=6&level=surface&overlay=rain&product=ecmwf&metricWind=km%2Fh&metricTemp=%C2%B0C`;
 
-            // Baraj Simülasyonu
-            const fill = Math.floor(Math.random() * (88 - 35 + 1)) + 35;
-            document.getElementById('damPercent').innerText = `%${fill}`;
-            const circle = document.getElementById('damCircle');
-            circle.style.strokeDashoffset = 534 - (534 * fill) / 100;
-            document.getElementById('damNote').innerText = `${data.name} barajlarında su seviyesi son yağışlarla %${fill} olarak ölçüldü.`;
-
-            // 5 Günlük Tahmin
+            // Tahmin
             const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
             const fData = await fRes.json();
+            document.getElementById('pop').innerText = "%" + Math.round((fData.list[0].pop || 0) * 100);
+
             const daily = {};
             fData.list.forEach(item => {
                 const date = item.dt_txt.split(' ')[0];
@@ -209,8 +197,8 @@
                 container.innerHTML += `
                     <div class="glass-card p-10 flex flex-col items-center group hover:bg-white/10 transition-all">
                         <span class="text-[11px] font-black opacity-30 uppercase mb-6 tracking-widest">${dayName}</span>
-                        <i data-lucide="${getIcon(daily[date].icon)}" class="text-blue-300 w-12 h-12 mb-8"></i>
-                        <div class="flex items-center gap-3">
+                        <i data-lucide="${getIcon(daily[date].icon)}" class="text-blue-300 w-12 h-12 mb-10 group-hover:scale-110 transition-transform"></i>
+                        <div class="flex items-center gap-4">
                             <span class="data-font text-3xl">${Math.round(daily[date].max)}°</span>
                             <div class="temp-sep"></div>
                             <span class="data-font text-blue-400/50 text-xl">${Math.round(daily[date].min)}°</span>
@@ -218,8 +206,11 @@
                     </div>`;
             });
 
+            status.innerText = "SİSTEM AKTİF";
             lucide.createIcons();
-        } catch (e) { console.error(e); }
+        } catch (e) {
+            status.innerText = "BAĞLANTI HATASI";
+        }
     }
 
     document.getElementById('cityInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') getWeather(); });
