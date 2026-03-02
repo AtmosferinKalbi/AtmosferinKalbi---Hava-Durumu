@@ -13,137 +13,175 @@
         
         body { 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #080d17 0%, #1e3a8a 100%);
+            background: linear-gradient(135deg, #080d17 0%, #111827 50%, #1e3a8a 100%);
             background-attachment: fixed;
             min-height: 100vh;
             color: white;
             margin: 0;
-            overflow-x: hidden;
+            display: flex;
         }
 
-        /* İnce ve Şık Sidebar */
+        /* Sidebar: Daha Geniş ve Net */
         .sidebar {
-            width: 70px;
-            transition: width 0.3s ease;
+            width: 280px; /* Sabit genişlik çarpışmayı engeller */
             position: fixed;
             left: 0;
             top: 0;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(30px);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 100;
-            overflow: hidden;
+            padding: 2rem 1.5rem;
         }
 
-        .sidebar:hover { width: 240px; }
+        /* Ana İçerik: Sidebar genişliği kadar kesin boşluk */
+        .main-content { 
+            margin-left: 280px; 
+            flex: 1;
+            padding: 3rem;
+            max-width: 1400px; /* Çok yayılmaması için sınırlandırdık */
+        }
 
         .glass-card { 
-            background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(15px); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 2rem; 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 2.5rem; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
 
         .forecast-card { 
-            background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 1.5rem; 
-            padding: 1.2rem; 
-            text-align: center;
+            background: rgba(255, 255, 255, 0.02); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            border-radius: 2rem; 
+            padding: 1.5rem; 
+            transition: all 0.3s ease;
         }
 
-        .main-content { margin-left: 70px; transition: margin-left 0.3s ease; }
-        
-        @media (max-width: 1024px) {
-            .sidebar { display: none; }
-            .main-content { margin-left: 0; }
+        .forecast-card:hover { background: rgba(255, 255, 255, 0.07); transform: translateY(-5px); }
+
+        .nav-link {
+            display: flex;
+            items-center: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: 1.25rem;
+            color: #94a3b8;
+            transition: all 0.2s;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .nav-link:hover:not(.active) { background: rgba(255, 255, 255, 0.05); color: white; }
+
+        @media (max-width: 1200px) {
+            .sidebar { width: 80px; padding: 2rem 0.5rem; }
+            .sidebar span, .sidebar .logo-text { display: none; }
+            .main-content { margin-left: 80px; padding: 1.5rem; }
         }
 
         ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
     </style>
 </head>
-<body class="flex">
+<body>
 
-    <aside class="sidebar flex flex-col items-center py-8">
-        <div class="mb-12 flex items-center w-full px-5">
-            <i data-lucide="zap" class="text-yellow-400 min-w-[30px]"></i>
-            <span class="ml-4 font-black tracking-tighter whitespace-nowrap uppercase">Atmosferin<span class="text-blue-400">Kalbi</span></span>
+    <aside class="sidebar flex flex-col">
+        <div class="flex items-center gap-3 px-2 mb-12">
+            <div class="bg-yellow-500 p-2 rounded-xl shadow-[0_0_20px_rgba(234,179,8,0.4)]">
+                <i data-lucide="zap" class="text-black w-6 h-6"></i>
+            </div>
+            <span class="logo-text font-black text-xl tracking-tighter uppercase">Atmosferin<span class="text-blue-400">Kalbi</span></span>
         </div>
         
-        <nav class="flex flex-col gap-6 w-full px-4">
-            <a href="#" class="flex items-center p-3 rounded-xl bg-white/10 text-blue-400"><i data-lucide="home"></i><span class="ml-4 font-bold whitespace-nowrap">Panel</span></a>
-            <a href="#forecast" class="flex items-center p-3 rounded-xl hover:bg-white/5 transition"><i data-lucide="calendar"></i><span class="ml-4 font-medium whitespace-nowrap">Tahmin</span></a>
-            <a href="#radar-section" class="flex items-center p-3 rounded-xl hover:bg-white/5 transition"><i data-lucide="map"></i><span class="ml-4 font-medium whitespace-nowrap">Radar</span></a>
+        <nav class="flex-1">
+            <a href="#" class="nav-link active"><i data-lucide="layout-grid"></i><span>Ana Panel</span></a>
+            <a href="#forecast" class="nav-link"><i data-lucide="calendar-days"></i><span>5 Günlük Tahmin</span></a>
+            <a href="#radar-section" class="nav-link"><i data-lucide="map-pin"></i><span>Canlı Radar</span></a>
         </nav>
+
+        <div class="mt-auto px-4 opacity-20 text-[10px] font-bold tracking-widest uppercase logo-text">
+            Sürüm 3.0 • 2026
+        </div>
     </aside>
 
-    <main class="main-content flex-1 p-6 lg:p-12 space-y-8">
+    <main class="main-content space-y-10">
         
-        <header class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
             <div>
-                <h1 id="cityName" class="text-6xl font-black uppercase tracking-tighter">...</h1>
-                <p id="currentDate" class="text-blue-300 font-bold text-xs uppercase opacity-60 mt-1"></p>
+                <h1 id="cityName" class="text-5xl lg:text-7xl font-black uppercase tracking-tighter">İSTANBUL</h1>
+                <p id="currentDate" class="text-blue-400/60 font-bold text-sm uppercase mt-2 tracking-widest"></p>
             </div>
-            <div class="relative w-full md:w-96">
-                <input id="cityInput" type="text" placeholder="Şehir Sorgula..." class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-400 transition-all">
-                <button onclick="getWeather()" class="absolute right-2 top-2 bg-blue-600 px-5 py-2 rounded-xl text-xs font-black hover:bg-blue-500 transition-colors">SORGULA</button>
+            <div class="relative w-full lg:w-[400px]">
+                <input id="cityInput" type="text" placeholder="Şehir Sorgula..." class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-white placeholder-white/20">
+                <button onclick="getWeather()" class="absolute right-2 top-2 bg-blue-600 px-6 py-2 rounded-xl text-xs font-black hover:bg-blue-500 transition-all uppercase tracking-tight">Sorgula</button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
-            <div class="xl:col-span-2 glass-card p-10 relative overflow-hidden flex flex-col justify-between min-h-[400px]">
-                <div id="bgIcon" class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none"></div>
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div class="xl:col-span-2 glass-card p-10 relative flex flex-col justify-between min-h-[420px] overflow-hidden">
+                <div id="bgIcon" class="absolute -right-16 -bottom-16 opacity-[0.03] pointer-events-none scale-150"></div>
                 
-                <div>
-                    <span class="text-blue-400 font-black text-xs uppercase tracking-[0.2em]">Güncel Sıcaklık</span>
-                    <div class="flex items-center gap-6 mt-2">
-                        <span id="temp" class="text-9xl font-black tracking-tighter leading-none">--°</span>
-                        <div id="weatherIcon"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        <span class="text-blue-400 font-black text-[10px] uppercase tracking-widest">Güncel Sıcaklık</span>
                     </div>
-                    <p id="description" class="text-2xl text-blue-200 capitalize italic mt-4">Sorgulanıyor...</p>
+                    <div class="flex items-center gap-10">
+                        <span id="temp" class="text-[10rem] font-black tracking-tighter leading-none">--°</span>
+                        <div id="weatherIcon" class="scale-150"></div>
+                    </div>
+                    <p id="description" class="text-4xl text-blue-100/80 font-medium capitalize mt-6 italic">Bulutlu</p>
                 </div>
 
-                <div class="mt-8">
-                    <p class="text-[10px] font-black opacity-40 uppercase tracking-widest">Gece Beklenen</p>
-                    <p id="nightTemp" class="text-4xl font-bold text-indigo-300">--°</p>
+                <div class="relative z-10 mt-10 flex items-end justify-between border-t border-white/5 pt-8">
+                    <div>
+                        <p class="text-[10px] font-black opacity-30 uppercase tracking-[0.2em] mb-1">Gece Beklenen</p>
+                        <p id="nightTemp" class="text-5xl font-bold text-indigo-400">--°</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] font-black opacity-30 uppercase tracking-[0.2em] mb-1">UV Endeksi</p>
+                        <p id="uvi" class="text-xl font-bold text-yellow-500">Düşük (2)</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 xl:grid-cols-2 xl:col-span-2 gap-4">
-                <div class="glass-card p-6 flex flex-col justify-center">
-                    <i data-lucide="wind" class="text-blue-400 mb-2"></i>
-                    <p class="text-[10px] opacity-40 uppercase font-bold">Rüzgar</p>
-                    <p id="windSpeed" class="text-2xl font-black">-- km/s</p>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="glass-card p-8 flex items-center gap-6 group hover:bg-white/10 transition">
+                    <div class="bg-blue-500/10 p-4 rounded-2xl text-blue-400"><i data-lucide="wind"></i></div>
+                    <div><p class="text-[10px] opacity-40 uppercase font-black tracking-widest">Rüzgar</p><p id="windSpeed" class="text-3xl font-black">-- km/s</p></div>
                 </div>
-                <div class="glass-card p-6 flex flex-col justify-center">
-                    <i data-lucide="umbrella" class="text-blue-400 mb-2"></i>
-                    <p class="text-[10px] opacity-40 uppercase font-bold">Yağış İhtimali</p>
-                    <p id="pop" class="text-2xl font-black">--%</p>
+                <div class="glass-card p-8 flex items-center gap-6 group hover:bg-white/10 transition">
+                    <div class="bg-blue-500/10 p-4 rounded-2xl text-blue-400"><i data-lucide="droplets"></i></div>
+                    <div><p class="text-[10px] opacity-40 uppercase font-black">Yağış İhtimali</p><p id="pop" class="text-3xl font-black">--%</p></div>
                 </div>
-                <div class="glass-card p-6 flex flex-col justify-center">
-                    <i data-lucide="sun" class="text-yellow-400 mb-2"></i>
-                    <p class="text-[10px] opacity-40 uppercase font-bold">UV Endeksi</p>
-                    <p id="uvi" class="text-2xl font-black">--</p>
-                </div>
-                <div class="glass-card p-6 flex flex-col justify-center">
-                    <i data-lucide="gauge" class="text-blue-400 mb-2"></i>
-                    <p class="text-[10px] opacity-40 uppercase font-bold">Basınç</p>
-                    <p id="pressure" class="text-2xl font-black">-- hPa</p>
+                <div class="glass-card p-8 flex items-center gap-6 group hover:bg-white/10 transition">
+                    <div class="bg-blue-500/10 p-4 rounded-2xl text-blue-400"><i data-lucide="gauge"></i></div>
+                    <div><p class="text-[10px] opacity-40 uppercase font-black">Basınç</p><p id="pressure" class="text-3xl font-black">-- hPa</p></div>
                 </div>
             </div>
         </div>
 
         <section id="forecast" class="space-y-6">
-            <h3 class="text-2xl font-black uppercase italic tracking-tighter">5 Günlük <span class="text-blue-400">Rapor</span></h3>
-            <div id="forecastContainer" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
+            <h3 class="text-2xl font-black uppercase tracking-tight flex items-center gap-3">
+                <span class="w-8 h-[2px] bg-blue-500"></span> 5 Günlük Rapor
+            </h3>
+            <div id="forecastContainer" class="grid grid-cols-2 md:grid-cols-5 gap-6"></div>
         </section>
 
-        <section id="radar-section" class="space-y-6 pb-12">
-            <h3 class="text-2xl font-black uppercase italic tracking-tighter">Canlı Radar <span class="text-blue-400">Görüntüsü</span></h3>
-            <div class="glass-card p-2 overflow-hidden h-[500px]">
-                <iframe id="windyIframe" src="" frameborder="0" class="w-full h-full rounded-2xl"></iframe>
+        <section id="radar-section" class="space-y-6 pb-20">
+            <h3 class="text-2xl font-black uppercase tracking-tight flex items-center gap-3">
+                <span class="w-8 h-[2px] bg-blue-500"></span> Canlı Radar Görüntüsü
+            </h3>
+            <div class="glass-card p-3 h-[600px] shadow-2xl overflow-hidden">
+                <iframe id="windyIframe" src="" frameborder="0" class="w-full h-full rounded-[1.5rem]"></iframe>
             </div>
         </section>
     </main>
@@ -160,7 +198,6 @@
             const target = document.getElementById('cityInput').value.trim() || city;
             
             try {
-                // 1. ANLIK VERİ
                 const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
                 const data = await res.json();
                 if(data.cod != 200) return alert("Şehir bulunamadı!");
@@ -172,56 +209,5 @@
                 document.getElementById('pressure').innerText = data.main.pressure;
                 
                 const icon = getLucideIcon(data.weather[0].main);
-                document.getElementById('weatherIcon').innerHTML = `<i data-lucide="${icon}" class="w-20 h-20 text-blue-100"></i>`;
-                document.getElementById('bgIcon').innerHTML = `<i data-lucide="${icon}" class="w-80 h-80 text-white"></i>`;
-
-                // Radar
-                document.getElementById('windyIframe').src = `https://embed.windy.com/embed2.html?lat=${data.coord.lat}&lon=${data.coord.lon}&zoom=6&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1`;
-
-                // 2. TAHMİN & EKSTRA VERİLER (OneCall simülasyonu için forecast kullanıldı)
-                const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
-                const fData = await fRes.json();
+                document.getElementById('weatherIcon').innerHTML = `<i data-lucide="${icon}" class="
                 
-                // Yağış İhtimali (İlk dilimden alıyoruz)
-                document.getElementById('pop').innerText = Math.round((fData.list[0].pop || 0) * 100) + "%";
-                // UV Endeksi (Sabit simülasyon, standart API'de OneCall gerekir)
-                document.getElementById('uvi').innerText = "Low (2)";
-
-                const daily = {};
-                fData.list.forEach(i => {
-                    const d = i.dt_txt.split(' ')[0];
-                    if(!daily[d]) daily[d] = { max: [], min: [], icon: i.weather[0].main };
-                    daily[d].max.push(i.main.temp_max);
-                    daily[d].min.push(i.main.temp_min);
-                });
-
-                document.getElementById('nightTemp').innerText = Math.round(Math.min(...daily[Object.keys(daily)[0]].min)) + "°";
-
-                const container = document.getElementById('forecastContainer');
-                container.innerHTML = "";
-                Object.keys(daily).slice(1, 6).forEach(d => {
-                    const name = new Date(d).toLocaleDateString('tr-TR', { weekday: 'short' });
-                    container.innerHTML += `
-                        <div class="forecast-card">
-                            <p class="text-[10px] font-black opacity-30 uppercase mb-2">${name}</p>
-                            <i data-lucide="${getLucideIcon(daily[d].icon)}" class="text-blue-400 w-8 h-8 mx-auto mb-3"></i>
-                            <div class="flex justify-center gap-3">
-                                <span class="text-xl font-black">${Math.round(Math.max(...daily[d].max))}°</span>
-                                <span class="text-xl font-medium opacity-40">${Math.round(Math.min(...daily[d].min))}°</span>
-                            </div>
-                            <p class="text-[8px] opacity-30 mt-2">GÜNDÜZ / GECE</p>
-                        </div>`;
-                });
-                
-                lucide.createIcons();
-            } catch (e) { console.error(e); }
-        }
-
-        document.getElementById('cityInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') getWeather(); });
-        window.onload = () => { 
-            getWeather(); 
-            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' });
-        };
-    </script>
-</body>
-</html>
