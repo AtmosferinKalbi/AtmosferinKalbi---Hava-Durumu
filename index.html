@@ -75,11 +75,9 @@
                 <a href="#radar-section" class="nav-btn"><i data-lucide="map" class="w-4 h-4"></i> Radar</a>
             </div>
         </div>
-        <div class="flex items-center gap-4">
-            <div id="aqiBadge" class="hidden md:flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/5">
-                <span class="text-[10px] font-bold opacity-50 uppercase tracking-widest">Hava Kalitesi:</span>
-                <span id="aqiText" class="text-[10px] font-bold text-green-400 uppercase">İYİ</span>
-            </div>
+        <div class="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/5">
+            <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span class="text-[10px] font-bold text-green-400 uppercase tracking-widest">SİSTEM AKTİF</span>
         </div>
     </nav>
 
@@ -95,11 +93,6 @@
                 <button onclick="getWeather()" class="absolute right-3 top-3 bg-blue-600 text-white px-8 py-3 rounded-xl text-xs font-black hover:bg-blue-500 transition-all">SORGULA</button>
             </div>
         </header>
-
-        <div class="glass-card p-6 flex items-center gap-6 bg-blue-500/10 border-blue-500/20">
-            <div class="bg-blue-500/20 p-4 rounded-2xl"><i data-lucide="sparkles" class="text-blue-300 w-6 h-6 animate-pulse"></i></div>
-            <p id="aiSuggestion" class="text-sm md:text-base font-medium text-blue-100 italic">Hava verileri analiz ediliyor, sana özel tavsiye hazırlanıyor...</p>
-        </div>
 
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-10">
             <div class="xl:col-span-2 glass-card p-10 lg:p-14 flex flex-col justify-between min-h-[550px] relative overflow-hidden">
@@ -124,17 +117,25 @@
             </div>
 
             <div class="grid grid-cols-1 gap-6">
-                <div class="glass-card p-10 flex items-center gap-8 group">
-                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-600 transition-all"><i data-lucide="wind" class="w-10 h-10"></i></div>
-                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Rüzgar</p><p id="windSpeed" class="text-5xl data-font">--</p></div>
+                <div class="glass-card p-8 bg-blue-500/10 border-blue-500/20 flex flex-col gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-blue-500/20 p-2 rounded-lg"><i data-lucide="sparkles" class="text-blue-300 w-5 h-5 animate-pulse"></i></div>
+                        <span class="text-[11px] font-black uppercase tracking-widest text-blue-300">Günün Tavsiyesi</span>
+                    </div>
+                    <p id="aiSuggestion" class="text-sm font-medium text-blue-100 italic">Analiz ediliyor...</p>
                 </div>
-                <div class="glass-card p-10 flex items-center gap-8 group">
-                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-600 transition-all"><i data-lucide="droplets" class="w-10 h-10"></i></div>
-                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Nem</p><p id="humidity" class="text-5xl data-font">--</p></div>
+
+                <div class="glass-card p-8 flex items-center gap-8 group">
+                    <div class="bg-white/5 p-5 rounded-[2rem] text-blue-400 group-hover:bg-blue-600 transition-all"><i data-lucide="wind" class="w-8 h-8"></i></div>
+                    <div><p class="text-[10px] opacity-40 font-bold uppercase tracking-widest">Rüzgar</p><p id="windSpeed" class="text-4xl data-font">--</p></div>
                 </div>
-                <div class="glass-card p-10 flex items-center gap-8 group">
-                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-600 transition-all"><i data-lucide="umbrella" class="w-10 h-10"></i></div>
-                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Yağış</p><p id="pop" class="text-5xl data-font">--</p></div>
+                <div class="glass-card p-8 flex items-center gap-8 group">
+                    <div class="bg-white/5 p-5 rounded-[2rem] text-blue-400 group-hover:bg-blue-600 transition-all"><i data-lucide="droplets" class="w-8 h-8"></i></div>
+                    <div><p class="text-[10px] opacity-40 font-bold uppercase tracking-widest">Nem</p><p id="humidity" class="text-4xl data-font">--</p></div>
+                </div>
+                <div class="glass-card p-8 flex items-center gap-8 group">
+                    <div class="bg-white/5 p-5 rounded-[2rem] text-blue-400 group-hover:bg-blue-600 transition-all"><i data-lucide="umbrella" class="w-8 h-8"></i></div>
+                    <div><p class="text-[10px] opacity-40 font-bold uppercase tracking-widest">Yağış İht.</p><p id="pop" class="text-4xl data-font">--</p></div>
                 </div>
             </div>
         </div>
@@ -164,34 +165,21 @@
         const main = data.weather[0].main;
         const temp = data.main.temp;
         
-        body.className = ''; // Reset
+        body.className = ''; 
         
         if (main === 'Clear') {
             body.classList.add('sunny');
-            suggest.innerText = temp > 25 ? "Hava pırıl pırıl! Güneş kremini sür ve soğuk bir şeyler içmeyi unutma. 😎" : "Tam yürüyüş havası! Gökyüzünün tadını çıkar. ☀️";
+            suggest.innerText = temp > 25 ? "Hava pırıl pırıl! Güneş kremini sür ve bol su iç. 😎" : "Tam yürüyüş havası! Gökyüzünün tadını çıkar. ☀️";
         } else if (main === 'Rain' || main === 'Drizzle') {
             body.classList.add('rainy');
-            suggest.innerText = "Yağmur berekettir! Şemsiyeni yanına al, en sevdiğin kahveciye sığın. ☕☂️";
+            suggest.innerText = "Yağmur berekettir! Şemsiyeni yanına almayı unutma. ☕☂️";
         } else if (main === 'Snow') {
             body.classList.add('snowy');
-            suggest.innerText = "Dışarısı masal gibi! Sıkı giyin, atkını sakın unutma. 🧣❄️";
+            suggest.innerText = "Dışarısı masal gibi! Sıkı giyin, atkını unutma. 🧣❄️";
         } else {
             body.classList.add('cloudy');
-            suggest.innerText = temp < 15 ? "Hava biraz gri ve serin. Yanına bir hırka alman iyi olur. 🧥☁️" : "Bulutlar güneşi kapatmış ama hava yumuşak. Keyifli bir gün dilerim! ☁️";
+            suggest.innerText = temp < 15 ? "Hava biraz serin. Yanına bir hırka alman iyi olur. 🧥☁️" : "Bulutlu ama yumuşak bir hava var. Keyifli bir gün dilerim! ☁️";
         }
-    }
-
-    async function getAQI(lat, lon) {
-        try {
-            const res = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`);
-            const data = await res.json();
-            const index = data.list[0].main.aqi;
-            const status = ["Hata", "Çok İyi", "İyi", "Orta", "Kötü", "Çok Kötü"];
-            const colors = ["", "text-green-400", "text-blue-400", "text-yellow-400", "text-orange-400", "text-red-400"];
-            const text = document.getElementById('aqiText');
-            text.innerText = status[index];
-            text.className = `text-[10px] font-bold uppercase ${colors[index]}`;
-        } catch (e) {}
     }
 
     async function getWeather(city = 'Istanbul') {
@@ -208,13 +196,12 @@
             document.getElementById('humidity').innerText = "%" + data.main.humidity;
             
             const iconName = getIcon(data.weather[0].main);
-            document.getElementById('weatherIcon').innerHTML = `<i data-lucide="${iconName}" class="w-32 h-32 lg:w-40 lg:h-40 text-white animate-bounce-slow"></i>`;
+            document.getElementById('weatherIcon').innerHTML = `<i data-lucide="${iconName}" class="w-32 h-32 lg:w-40 lg:h-40 text-white transition-all"></i>`;
             document.getElementById('bgIcon').innerHTML = `<i data-lucide="${iconName}" class="w-full h-full text-white"></i>`;
 
             setThemeAndSuggestion(data);
-            getAQI(data.coord.lat, data.coord.lon);
 
-            document.getElementById('windyFrame').src = `https://embed.windy.com/embed2.html?lat=${data.coord.lat}&lon=${data.coord.lon}&zoom=6&overlay=rain&product=ecmwf&metricWind=km%2Fh&metricTemp=%C2%B0C`;
+            document.getElementById('windyFrame').src = `https://embed.windy.com/embed2.html?lat=${data.coord.lat}&lon=${data.coord.lon}&zoom=6&overlay=rain&product=ecmwf&metricTemp=%C2%B0C`;
 
             const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
             const fData = await fRes.json();
