@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AtmosferinKalbi | V1.0</title>
+    <title>AtmosferinKalbi | V1.1 PRO</title>
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Atmosfer">
-    
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/4064/4064211.png">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/4064/4064211.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -18,17 +15,22 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         
+        :root {
+            --bg-gradient: linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%);
+            --accent-color: #60a5fa;
+        }
+
         body { 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%);
+            background: var(--bg-gradient);
             background-attachment: fixed;
             min-height: 100vh; color: white; margin: 0;
+            transition: background 1s ease;
             scroll-behavior: smooth;
         }
 
-        /* Üst Navigasyon */
         .top-nav {
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: sticky; top: 0; z-index: 1000;
@@ -37,36 +39,30 @@
         .data-font { font-weight: 900; letter-spacing: -0.05em; line-height: 0.9; }
         
         .glass-card { 
-            background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(25px); 
+            background: rgba(255, 255, 255, 0.07); 
+            backdrop-filter: blur(30px); 
             border: 1px solid rgba(255, 255, 255, 0.1); 
             border-radius: 2.5rem; 
+            transition: transform 0.3s ease, background 0.5s ease;
         }
+        .glass-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.1); }
 
         .nav-btn {
-            padding: 8px 20px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 13px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center; gap: 8px;
-            color: rgba(255,255,255,0.6);
+            padding: 8px 20px; border-radius: 12px; font-weight: 700; font-size: 13px;
+            display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.6);
         }
-        .nav-btn:hover { background: rgba(255,255,255,0.1); color: white; }
-        .nav-btn.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .nav-btn.active { background: rgba(59, 130, 246, 0.2); color: var(--accent-color); border: 1px solid rgba(59, 130, 246, 0.3); }
 
-        .temp-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.2); }
+        #radar-container { height: 550px; border-radius: 2.5rem; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); }
 
-        #radar-container {
-            height: 600px;
-            border-radius: 2.5rem;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        /* Dinamik Renk Temaları */
+        body.sunny { --bg-gradient: linear-gradient(180deg, #0284c7 0%, #0f172a 100%); }
+        body.cloudy { --bg-gradient: linear-gradient(180deg, #475569 0%, #0f172a 100%); }
+        body.rainy { --bg-gradient: linear-gradient(180deg, #1e293b 0%, #020617 100%); }
+        body.snowy { --bg-gradient: linear-gradient(180deg, #94a3b8 0%, #1e293b 100%); }
     </style>
 </head>
-<body>
+<body id="mainBody">
 
     <nav class="top-nav w-full px-6 lg:px-12 py-4 flex items-center justify-between">
         <div class="flex items-center gap-10">
@@ -76,12 +72,14 @@
             </div>
             <div class="hidden md:flex items-center gap-2">
                 <a href="#" class="nav-btn active"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Panel</a>
-                <a href="#radar-section" class="nav-btn"><i data-lucide="map" class="w-4 h-4"></i> Canlı Radar</a>
+                <a href="#radar-section" class="nav-btn"><i data-lucide="map" class="w-4 h-4"></i> Radar</a>
             </div>
         </div>
-        <div class="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/5">
-            <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span id="status" class="text-[10px] font-bold text-green-400 uppercase tracking-widest">SİSTEM AKTİF</span>
+        <div class="flex items-center gap-4">
+            <div id="aqiBadge" class="hidden md:flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/5">
+                <span class="text-[10px] font-bold opacity-50 uppercase tracking-widest">Hava Kalitesi:</span>
+                <span id="aqiText" class="text-[10px] font-bold text-green-400 uppercase">İYİ</span>
+            </div>
         </div>
     </nav>
 
@@ -98,62 +96,58 @@
             </div>
         </header>
 
+        <div class="glass-card p-6 flex items-center gap-6 bg-blue-500/10 border-blue-500/20">
+            <div class="bg-blue-500/20 p-4 rounded-2xl"><i data-lucide="sparkles" class="text-blue-300 w-6 h-6 animate-pulse"></i></div>
+            <p id="aiSuggestion" class="text-sm md:text-base font-medium text-blue-100 italic">Hava verileri analiz ediliyor, sana özel tavsiye hazırlanıyor...</p>
+        </div>
+
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-10">
-            <div class="xl:col-span-2 glass-card p-10 lg:p-14 flex flex-col justify-between min-h-[550px] relative overflow-hidden group">
-                <div id="bgIcon" class="absolute -right-10 -bottom-10 opacity-[0.03] scale-[4] pointer-events-none transition-transform duration-1000"></div>
+            <div class="xl:col-span-2 glass-card p-10 lg:p-14 flex flex-col justify-between min-h-[550px] relative overflow-hidden">
+                <div id="bgIcon" class="absolute -right-10 -bottom-10 opacity-[0.03] scale-[4] pointer-events-none"></div>
                 <div class="relative z-10">
                     <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-20">
-                        <span id="temp" class="text-[9rem] lg:text-[11rem] data-font text-white drop-shadow-2xl">--°</span>
-                        <div id="weatherIcon" class="drop-shadow-2xl"></div>
+                        <span id="temp" class="text-[9rem] lg:text-[11rem] data-font text-white">--°</span>
+                        <div id="weatherIcon"></div>
                     </div>
-                    <p id="description" class="text-4xl lg:text-6xl text-blue-200/80 font-light capitalize mt-10 italic">---</p>
+                    <p id="description" class="text-4xl lg:text-6xl text-blue-200/80 font-light capitalize mt-10">---</p>
                 </div>
-                <div class="relative z-10 flex gap-12 border-t border-white/10 pt-10 mt-10">
-                    <div class="bg-white/5 px-8 py-4 rounded-3xl border border-white/5 flex flex-col items-center">
-                        <p class="text-[10px] font-black opacity-30 tracking-widest uppercase mb-2">Gündüz Max</p>
-                        <p id="dayTemp" class="text-5xl data-font">--°</p>
+                <div class="relative z-10 flex gap-8 border-t border-white/10 pt-10 mt-10">
+                    <div class="text-center">
+                        <p class="text-[10px] font-black opacity-30 uppercase mb-2">Gündüz</p>
+                        <p id="dayTemp" class="text-4xl data-font">--°</p>
                     </div>
-                    <div class="bg-blue-500/5 px-8 py-4 rounded-3xl border border-blue-500/10 flex flex-col items-center text-blue-400">
-                        <p class="text-[10px] font-black opacity-60 tracking-widest uppercase mb-2">Gece Min</p>
-                        <p id="nightTemp" class="text-5xl data-font">--°</p>
+                    <div class="text-center text-blue-400">
+                        <p class="text-[10px] font-black opacity-60 uppercase mb-2">Gece</p>
+                        <p id="nightTemp" class="text-4xl data-font">--°</p>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 gap-6">
                 <div class="glass-card p-10 flex items-center gap-8 group">
-                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all"><i data-lucide="wind" class="w-10 h-10"></i></div>
+                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-600 transition-all"><i data-lucide="wind" class="w-10 h-10"></i></div>
                     <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Rüzgar</p><p id="windSpeed" class="text-5xl data-font">--</p></div>
                 </div>
                 <div class="glass-card p-10 flex items-center gap-8 group">
-                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all"><i data-lucide="droplets" class="w-10 h-10"></i></div>
-                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Nem Oranı</p><p id="humidity" class="text-5xl data-font">--</p></div>
+                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-600 transition-all"><i data-lucide="droplets" class="w-10 h-10"></i></div>
+                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Nem</p><p id="humidity" class="text-5xl data-font">--</p></div>
                 </div>
                 <div class="glass-card p-10 flex items-center gap-8 group">
-                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all"><i data-lucide="umbrella" class="w-10 h-10"></i></div>
-                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Yağış İht.</p><p id="pop" class="text-5xl data-font">--</p></div>
+                    <div class="bg-white/5 p-6 rounded-[2rem] text-blue-400 group-hover:bg-blue-600 transition-all"><i data-lucide="umbrella" class="w-10 h-10"></i></div>
+                    <div><p class="text-[11px] opacity-40 font-bold uppercase tracking-widest">Yağış</p><p id="pop" class="text-5xl data-font">--</p></div>
                 </div>
             </div>
         </div>
 
         <section id="radar-section" class="space-y-8">
-            <div class="flex items-center gap-6">
-                <h3 class="text-lg font-black uppercase tracking-[0.4em] text-white/30 whitespace-nowrap">Canlı Radar</h3>
-                <div class="h-[1px] w-full bg-white/10"></div>
-            </div>
-            <div id="radar-container">
-                <iframe id="windyFrame" class="w-full h-full" src="" frameborder="0"></iframe>
-            </div>
+            <div class="flex items-center gap-6"><h3 class="text-lg font-black uppercase tracking-[0.4em] text-white/30 whitespace-nowrap">Canlı Radar</h3><div class="h-[1px] w-full bg-white/10"></div></div>
+            <div id="radar-container"><iframe id="windyFrame" class="w-full h-full" src="" frameborder="0"></iframe></div>
         </section>
 
         <section class="space-y-10">
-            <div class="flex items-center gap-6">
-                <h3 class="text-lg font-black uppercase tracking-[0.4em] text-white/30 whitespace-nowrap">5 Günlük Rapor</h3>
-                <div class="h-[1px] w-full bg-white/10"></div>
-            </div>
+            <div class="flex items-center gap-6"><h3 class="text-lg font-black uppercase tracking-[0.4em] text-white/30 whitespace-nowrap">5 Günlük Rapor</h3><div class="h-[1px] w-full bg-white/10"></div></div>
             <div id="forecastContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8"></div>
         </section>
-
     </main>
 
 <script>
@@ -164,15 +158,48 @@
         return map[main] || 'cloud-sun';
     }
 
+    function setThemeAndSuggestion(data) {
+        const body = document.getElementById('mainBody');
+        const suggest = document.getElementById('aiSuggestion');
+        const main = data.weather[0].main;
+        const temp = data.main.temp;
+        
+        body.className = ''; // Reset
+        
+        if (main === 'Clear') {
+            body.classList.add('sunny');
+            suggest.innerText = temp > 25 ? "Hava pırıl pırıl! Güneş kremini sür ve soğuk bir şeyler içmeyi unutma. 😎" : "Tam yürüyüş havası! Gökyüzünün tadını çıkar. ☀️";
+        } else if (main === 'Rain' || main === 'Drizzle') {
+            body.classList.add('rainy');
+            suggest.innerText = "Yağmur berekettir! Şemsiyeni yanına al, en sevdiğin kahveciye sığın. ☕☂️";
+        } else if (main === 'Snow') {
+            body.classList.add('snowy');
+            suggest.innerText = "Dışarısı masal gibi! Sıkı giyin, atkını sakın unutma. 🧣❄️";
+        } else {
+            body.classList.add('cloudy');
+            suggest.innerText = temp < 15 ? "Hava biraz gri ve serin. Yanına bir hırka alman iyi olur. 🧥☁️" : "Bulutlar güneşi kapatmış ama hava yumuşak. Keyifli bir gün dilerim! ☁️";
+        }
+    }
+
+    async function getAQI(lat, lon) {
+        try {
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`);
+            const data = await res.json();
+            const index = data.list[0].main.aqi;
+            const status = ["Hata", "Çok İyi", "İyi", "Orta", "Kötü", "Çok Kötü"];
+            const colors = ["", "text-green-400", "text-blue-400", "text-yellow-400", "text-orange-400", "text-red-400"];
+            const text = document.getElementById('aqiText');
+            text.innerText = status[index];
+            text.className = `text-[10px] font-bold uppercase ${colors[index]}`;
+        } catch (e) {}
+    }
+
     async function getWeather(city = 'Istanbul') {
         const target = document.getElementById('cityInput').value.trim() || city;
-        const status = document.getElementById('status');
-        
         try {
-            status.innerText = "GÜNCELLENİYOR...";
             const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
             const data = await res.json();
-            if(data.cod != 200) throw new Error("Hata");
+            if(data.cod != 200) return;
 
             document.getElementById('cityName').innerText = data.name;
             document.getElementById('temp').innerText = Math.round(data.main.temp) + "°";
@@ -181,13 +208,14 @@
             document.getElementById('humidity').innerText = "%" + data.main.humidity;
             
             const iconName = getIcon(data.weather[0].main);
-            document.getElementById('weatherIcon').innerHTML = `<i data-lucide="${iconName}" class="w-32 h-32 lg:w-40 lg:h-40 text-white"></i>`;
+            document.getElementById('weatherIcon').innerHTML = `<i data-lucide="${iconName}" class="w-32 h-32 lg:w-40 lg:h-40 text-white animate-bounce-slow"></i>`;
             document.getElementById('bgIcon').innerHTML = `<i data-lucide="${iconName}" class="w-full h-full text-white"></i>`;
 
-            // Radar Güncelleme
-            document.getElementById('windyFrame').src = `https://embed.windy.com/embed2.html?lat=${data.coord.lat}&lon=${data.coord.lon}&zoom=6&level=surface&overlay=rain&product=ecmwf&metricWind=km%2Fh&metricTemp=%C2%B0C`;
+            setThemeAndSuggestion(data);
+            getAQI(data.coord.lat, data.coord.lon);
 
-            // 5 Günlük Tahmin Verisi
+            document.getElementById('windyFrame').src = `https://embed.windy.com/embed2.html?lat=${data.coord.lat}&lon=${data.coord.lon}&zoom=6&overlay=rain&product=ecmwf&metricWind=km%2Fh&metricTemp=%C2%B0C`;
+
             const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${target}&appid=${apiKey}&units=metric&lang=tr`);
             const fData = await fRes.json();
             document.getElementById('pop').innerText = "%" + Math.round((fData.list[0].pop || 0) * 100);
@@ -211,22 +239,19 @@
             Object.keys(daily).slice(1, 6).forEach(date => {
                 const dayName = new Date(date).toLocaleDateString('tr-TR', { weekday: 'long' });
                 container.innerHTML += `
-                    <div class="glass-card p-10 flex flex-col items-center group hover:bg-white/10 transition-all">
+                    <div class="glass-card p-10 flex flex-col items-center group">
                         <span class="text-[11px] font-black opacity-30 uppercase mb-6 tracking-widest">${dayName}</span>
-                        <i data-lucide="${getIcon(daily[date].icon)}" class="text-blue-300 w-12 h-12 mb-10 group-hover:scale-110 transition-transform"></i>
-                        <div class="flex items-center gap-4">
+                        <i data-lucide="${getIcon(daily[date].icon)}" class="text-blue-300 w-12 h-12 mb-8 group-hover:scale-110 transition-transform"></i>
+                        <div class="flex items-center gap-3">
                             <span class="data-font text-3xl">${Math.round(daily[date].max)}°</span>
-                            <div class="temp-sep"></div>
+                            <div class="w-[1px] h-4 bg-white/20"></div>
                             <span class="data-font text-blue-400/50 text-xl">${Math.round(daily[date].min)}°</span>
                         </div>
                     </div>`;
             });
 
-            status.innerText = "SİSTEM AKTİF";
             lucide.createIcons();
-        } catch (e) {
-            status.innerText = "BAĞLANTI HATASI";
-        }
+        } catch (e) {}
     }
 
     document.getElementById('cityInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') getWeather(); });
