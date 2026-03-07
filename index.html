@@ -2,104 +2,131 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AtmosferinKalbi | Mobil Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AtmosferinKalbi | Tam Ekran Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%);
-            min-height: 100vh; color: white;
+            background: linear-gradient(180deg, #0f172a 0%, #1e3a8a 100%);
+            height: 100vh; color: white; margin: 0; overflow: hidden;
         }
         .glass-card { 
             background: rgba(255, 255, 255, 0.08); 
-            backdrop-filter: blur(15px); 
+            backdrop-filter: blur(20px); 
             border: 1px solid rgba(255, 255, 255, 0.1); 
             border-radius: 1.5rem; 
         }
-        .data-font { font-weight: 900; letter-spacing: -0.02em; }
-        
-        /* Mobil için yazı boyutu optimizasyonu */
-        @media (max-width: 640px) {
-            .main-temp { font-size: 5rem !important; line-height: 1; }
-            .city-title { font-size: 2.5rem !important; }
-        }
+        .main-container { height: 100vh; display: flex; flex-direction: column; padding: 1rem; }
+        .data-font { font-weight: 900; }
     </style>
 </head>
-<body class="p-4 pb-10">
+<body>
 
-    <div class="max-w-md mx-auto mb-6">
-        <div class="relative flex gap-2">
-            <input id="cityInput" type="text" placeholder="Şehir ara..." 
-                class="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 outline-none focus:border-blue-400 transition-all font-semibold">
-            <button onclick="getWeather()" class="bg-blue-600 p-3 rounded-2xl">
-                <i data-lucide="search" class="w-6 h-6"></i>
+    <main class="main-container space-y-3">
+        <div class="flex gap-2">
+            <input id="cityInput" type="text" placeholder="Şehir yaz..." 
+                class="flex-1 bg-white/10 border border-white/20 rounded-2xl px-4 py-3 outline-none text-sm">
+            <button onclick="getWeather()" class="bg-blue-600 px-5 rounded-2xl active:scale-95 transition-transform">
+                <i data-lucide="search" class="w-5 h-5"></i>
             </button>
         </div>
-    </div>
 
-    <main class="max-w-md mx-auto space-y-4">
-        
-        <div class="glass-card p-6 text-center relative overflow-hidden">
-            <p id="currentDate" class="text-[10px] uppercase tracking-widest opacity-50 mb-2"></p>
-            <h1 id="cityName" class="city-title text-4xl font-black uppercase mb-1 truncate">---</h1>
-            <p id="description" class="text-blue-300 font-medium capitalize mb-4">---</p>
+        <div class="glass-card flex-1 flex flex-col items-center justify-center p-6 relative">
+            <div id="loadingOverlay" class="absolute inset-0 bg-slate-900/80 z-50 flex items-center justify-center rounded-3xl hidden">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
+
+            <p id="cityName" class="text-3xl font-black uppercase tracking-tight">Şehir Seçin</p>
+            <p id="description" class="text-blue-300 text-sm font-medium mb-4 italic">Hava durumu bekleniyor...</p>
             
-            <div class="flex items-center justify-center gap-4">
-                <div id="weatherIcon" class="w-16 h-16 text-blue-400"></div>
-                <span id="temp" class="main-temp text-7xl data-font">--°</span>
+            <div class="flex items-center gap-4 my-2">
+                <div id="weatherIcon" class="w-20 h-20 text-blue-400"></div>
+                <span id="temp" class="text-8xl data-font">--°</span>
             </div>
 
-            <div class="flex justify-center gap-6 mt-6 pt-6 border-t border-white/10">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="arrow-up" class="w-4 h-4 text-orange-400"></i>
-                    <span id="dayTemp" class="font-bold">--°</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i data-lucide="arrow-down" class="w-4 h-4 text-blue-400"></i>
-                    <span id="nightTemp" class="font-bold">--°</span>
-                </div>
+            <div class="flex gap-8 mt-4">
+                <div class="text-center"><p class="text-[10px] opacity-50 font-bold uppercase">Gündüz</p><p id="dayTemp" class="text-xl font-black">--°</p></div>
+                <div class="text-center text-blue-300"><p class="text-[10px] opacity-50 font-bold uppercase">Gece</p><p id="nightTemp" class="text-xl font-black">--°</p></div>
             </div>
         </div>
 
-        <div class="glass-card p-4 bg-blue-500/10 flex items-start gap-3">
-            <i data-lucide="sparkles" class="text-blue-300 w-5 h-5 mt-1 shrink-0"></i>
-            <p id="aiSuggestion" class="text-sm leading-snug italic">Veriler yükleniyor...</p>
+        <div class="glass-card p-4 bg-blue-500/10 flex items-center gap-3">
+            <i data-lucide="sparkles" class="text-blue-300 w-5 h-5 shrink-0"></i>
+            <p id="aiSuggestion" class="text-xs leading-tight">Analiz başlatılıyor...</p>
         </div>
 
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-3 gap-2">
             <div class="glass-card p-3 text-center">
-                <i data-lucide="wind" class="w-5 h-5 mx-auto mb-1 text-blue-300"></i>
-                <p class="text-[8px] opacity-50 uppercase font-bold">Rüzgar</p>
-                <p id="windSpeed" class="text-sm font-black">--</p>
+                <i data-lucide="wind" class="w-4 h-4 mx-auto mb-1 text-blue-300"></i>
+                <p id="windSpeed" class="text-xs font-black">-- km/s</p>
             </div>
             <div class="glass-card p-3 text-center">
-                <i data-lucide="droplets" class="w-5 h-5 mx-auto mb-1 text-blue-300"></i>
-                <p class="text-[8px] opacity-50 uppercase font-bold">Nem</p>
-                <p id="humidity" class="text-sm font-black">--</p>
+                <i data-lucide="droplets" class="w-4 h-4 mx-auto mb-1 text-blue-300"></i>
+                <p id="humidity" class="text-xs font-black">--%</p>
             </div>
             <div class="glass-card p-3 text-center">
-                <i data-lucide="umbrella" class="w-5 h-5 mx-auto mb-1 text-blue-300"></i>
-                <p class="text-[8px] opacity-50 uppercase font-bold">Yağış</p>
-                <p id="pop" class="text-sm font-black">--</p>
+                <i data-lucide="umbrella" class="w-4 h-4 mx-auto mb-1 text-blue-300"></i>
+                <p id="pop" class="text-xs font-black">--%</p>
             </div>
         </div>
 
-        <div class="glass-card overflow-hidden h-48">
-            <iframe id="windyFrame" class="w-full h-full opacity-80" src="" frameborder="0"></iframe>
-        </div>
-
-        <div id="forecastContainer" class="flex gap-2 overflow-x-auto pb-2">
-            </div>
-
+        <div id="forecastContainer" class="flex gap-2 overflow-x-auto no-scrollbar py-1"></div>
     </main>
 
 <script>
-    // JS Kısmı aynı mantıkla çalışacak, sadece forecastContainer içine 
-    // eklenen kartların genişliğini 'min-w-[100px]' yaparak kaydırılabilir yapabiliriz.
-    // Önceki koddaki API anahtarını buraya da eklemeyi unutma.
+    const apiKey = "6d4c1f9be7237068a9dd323532bfa14d"; 
+
+    function getIconHTML(main) {
+        const icons = { 'Clear': 'sun', 'Clouds': 'cloud', 'Rain': 'cloud-rain', 'Snow': 'snowflake', 'Drizzle': 'cloud-drizzle' };
+        return `<i data-lucide="${icons[main] || 'cloud-sun'}" class="w-full h-full"></i>`;
+    }
+
+    async function getWeather() {
+        const city = document.getElementById('cityInput').value.trim() || "Istanbul";
+        const loader = document.getElementById('loadingOverlay');
+        loader.classList.remove('hidden');
+
+        try {
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=tr`);
+            const data = await res.json();
+
+            if (data.cod !== 200) throw new Error("Şehir bulunamadı");
+
+            document.getElementById('cityName').innerText = data.name;
+            document.getElementById('temp').innerText = Math.round(data.main.temp) + "°";
+            document.getElementById('description').innerText = data.weather[0].description;
+            document.getElementById('windSpeed').innerText = Math.round(data.wind.speed * 3.6) + " km/s";
+            document.getElementById('humidity').innerText = "%" + data.main.humidity;
+            document.getElementById('weatherIcon').innerHTML = getIconHTML(data.weather[0].main);
+            
+            // Tavsiye
+            const t = data.main.temp;
+            document.getElementById('aiSuggestion').innerText = t > 20 ? "Hava gayet güzel, keyfini çıkar! ☀️" : "Biraz serin olabilir, tedbirli ol. 🧥";
+
+            // Tahmin Verisi
+            const fRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric&lang=tr`);
+            const fData = await fRes.json();
+            
+            document.getElementById('dayTemp').innerText = Math.round(fData.list[0].main.temp_max) + "°";
+            document.getElementById('nightTemp').innerText = Math.round(fData.list[0].main.temp_min) + "°";
+            document.getElementById('pop').innerText = "%" + Math.round(fData.list[0].pop * 100);
+
+            loader.classList.add('hidden');
+            lucide.createIcons();
+        } catch (err) {
+            document.getElementById('aiSuggestion').innerText = "Hata: Şehir bulunamadı veya API anahtarı geçersiz.";
+            loader.classList.add('hidden');
+        }
+    }
+
+    // Sayfa açılır açılmaz İstanbul verisini yükle
+    window.onload = () => {
+        getWeather('Istanbul');
+        lucide.createIcons();
+    };
 </script>
 </body>
 </html>
