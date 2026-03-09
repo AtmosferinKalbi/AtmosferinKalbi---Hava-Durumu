@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AtmosferinKalbi | V1.5 PREMIUM</title>
+    <title>AtmosferinKalbi | V1.6 ELITE</title>
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,7 +17,6 @@
         
         :root {
             --bg-gradient: linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%);
-            --accent-color: #60a5fa;
         }
 
         body { 
@@ -26,7 +25,6 @@
             background-attachment: fixed;
             min-height: 100vh; color: white; margin: 0;
             transition: background 1s ease;
-            scroll-behavior: smooth;
         }
 
         .top-nav {
@@ -36,7 +34,7 @@
             position: sticky; top: 0; z-index: 1000;
         }
 
-        .data-font { font-weight: 900; letter-spacing: -0.05em; line-height: 0.9; }
+        .data-font { font-weight: 900; letter-spacing: -0.05em; line-height: 1; }
         
         .glass-card { 
             background: rgba(255, 255, 255, 0.07); 
@@ -48,7 +46,7 @@
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-        #radar-container { height: 400px; border-radius: 2rem; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); }
+        #radar-container { height: 450px; border-radius: 2rem; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); }
 
         body.sunny { --bg-gradient: linear-gradient(180deg, #0284c7 0%, #0f172a 100%); }
         body.cloudy { --bg-gradient: linear-gradient(180deg, #475569 0%, #0f172a 100%); }
@@ -120,7 +118,7 @@
                         <i data-lucide="sparkles" class="w-4 h-4"></i>
                         <span class="text-[10px] font-black uppercase tracking-widest">AI Tavsiyesi</span>
                     </div>
-                    <p id="aiSuggestion" class="text-xs font-medium text-blue-100 italic leading-relaxed">Veriler işleniyor...</p>
+                    <p id="aiSuggestion" class="text-xs font-medium text-blue-100 italic leading-relaxed">Analiz ediliyor...</p>
                 </div>
 
                 <div class="glass-card p-6 border-yellow-500/10">
@@ -198,10 +196,10 @@
         const main = data.weather[0].main;
         const temp = data.main.temp;
         body.className = ''; 
-        if (main === 'Clear') { body.classList.add('sunny'); suggest.innerText = temp > 25 ? "Hava harika! Bol su iç ve güneşten korun. 😎" : "Güneşli ve temiz bir hava, tam gezmelik! ☀️"; }
-        else if (main === 'Rain' || main === 'Drizzle') { body.classList.add('rainy'); suggest.innerText = "Yağmur yaklaşıyor, şemsiyesiz çıkma! ☕☂️"; }
-        else if (main === 'Snow') { body.classList.add('snowy'); suggest.innerText = "Dışarısı bembeyaz! Sıkı giyinmeyi ihmal etme. 🧣❄️"; }
-        else { body.classList.add('cloudy'); suggest.innerText = temp < 15 ? "Hava biraz serin, üzerine bir şeyler almalısın. 🧥☁️" : "Bulutlu bir gün seni bekliyor. ☁️"; }
+        if (main === 'Clear') { body.classList.add('sunny'); suggest.innerText = temp > 25 ? "Hava pırıl pırıl! Su içmeyi unutma. 😎" : "Harika bir hava! Dışarıda vakit geçirmek için ideal. ☀️"; }
+        else if (main === 'Rain' || main === 'Drizzle') { body.classList.add('rainy'); suggest.innerText = "Yağmur berekettir, şemsiyeni al! ☕☂️"; }
+        else if (main === 'Snow') { body.classList.add('snowy'); suggest.innerText = "Kar manzarası harika! Sıkı giyin. 🧣❄️"; }
+        else { body.classList.add('cloudy'); suggest.innerText = temp < 15 ? "Hava biraz serin, bir ceket iyi olabilir. 🧥☁️" : "Bulutlu ama yumuşak bir hava. ☁️"; }
     }
 
     async function getWeather(city = 'Istanbul') {
@@ -232,6 +230,7 @@
             const fData = await fRes.json();
             document.getElementById('pop').innerText = "%" + Math.round((fData.list[0].pop || 0) * 100);
 
+            // 24 Saatlik
             const hourlyContainer = document.getElementById('hourlyContainer');
             hourlyContainer.innerHTML = "";
             fData.list.slice(0, 9).forEach(item => {
@@ -244,11 +243,18 @@
                     </div>`;
             });
 
+            // 5 Günlük Rapor Gruplama
             const daily = {};
             fData.list.forEach(item => {
                 const date = item.dt_txt.split(' ')[0];
-                if(!daily[date]) daily[date] = { min: item.main.temp_min, max: item.main.temp_max, icon: item.weather[0].main };
-                else {
+                if(!daily[date]) {
+                    daily[date] = { 
+                        min: item.main.temp_min, 
+                        max: item.main.temp_max, 
+                        icon: item.weather[0].main,
+                        desc: item.weather[0].description
+                    };
+                } else {
                     if(item.main.temp_min < daily[date].min) daily[date].min = item.main.temp_min;
                     if(item.main.temp_max > daily[date].max) daily[date].max = item.main.temp_max;
                 }
@@ -258,20 +264,25 @@
             document.getElementById('dayTemp').innerText = Math.round(daily[todayKey].max) + "°";
             document.getElementById('nightTemp').innerText = Math.round(daily[todayKey].min) + "°";
 
-            // YENİLENEN 5 GÜNLÜK RAPOR TASARIMI
+            // YENİLENEN 5 GÜNLÜK RAPOR TASARIMI (ELITE)
             const forecastContainer = document.getElementById('forecastContainer');
             forecastContainer.innerHTML = "";
             Object.keys(daily).slice(1, 6).forEach(date => {
                 const dayName = new Date(date).toLocaleDateString('tr-TR', { weekday: 'long' });
                 forecastContainer.innerHTML += `
-                    <div class="glass-card p-6 lg:p-8 flex items-center">
-                        <span class="text-[11px] font-black uppercase opacity-30 w-1/3">${dayName}</span>
-                        <div class="flex items-center justify-center gap-6 w-2/3">
-                            <i data-lucide="${getIcon(daily[date].icon)}" class="text-blue-300 w-6 h-6"></i>
-                            <div class="flex items-baseline gap-4">
-                                <span class="data-font text-2xl lg:text-3xl">${Math.round(daily[date].max)}°</span>
-                                <span class="data-font text-blue-400/40 text-lg lg:text-xl">${Math.round(daily[date].min)}°</span>
-                            </div>
+                    <div class="glass-card p-6 lg:p-8 flex items-center justify-between group hover:bg-white/10 transition-colors">
+                        <div class="w-1/4">
+                            <span class="text-[12px] font-black uppercase opacity-30 tracking-widest">${dayName}</span>
+                        </div>
+                        
+                        <div class="w-2/4 flex items-center justify-center gap-6 border-x border-white/5">
+                            <i data-lucide="${getIcon(daily[date].icon)}" class="text-blue-300 w-8 h-8"></i>
+                            <span class="text-[13px] font-medium capitalize text-blue-100/60 hidden md:block">${daily[date].desc}</span>
+                        </div>
+                        
+                        <div class="w-1/4 flex items-center justify-end gap-5">
+                            <span class="data-font text-3xl lg:text-4xl text-white">${Math.round(daily[date].max)}°</span>
+                            <span class="data-font text-xl lg:text-2xl text-blue-400/40">${Math.round(daily[date].min)}°</span>
                         </div>
                     </div>`;
             });
@@ -288,5 +299,4 @@
     };
 </script>
 </body>
-  </html>
-  
+</html>
